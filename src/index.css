@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Bento Grid Shadows */
+  --shadow-bento: 8px 8px 0px 0px rgba(15, 23, 42, 1);
+  --shadow-bento-sm: 4px 4px 0px 0px rgba(15, 23, 42, 1);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.high-contrast {
+  --shadow-bento: 12px 12px 0px 0px #000;
+  --shadow-bento-sm: 6px 6px 0px 0px #000;
+  
+  filter: contrast(1.2) saturate(0.2);
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+.high-contrast * {
+  border-color: #000 !important;
+}
+
+.high-contrast .bg-slate-900,
+.high-contrast .bg-blue-900,
+.high-contrast .bg-red-600,
+.high-contrast .bg-blue-600,
+.high-contrast .bg-slate-800 {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.high-contrast .text-blue-700,
+.high-contrast .text-red-600,
+.high-contrast .text-blue-600 {
+  color: #000 !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.high-contrast .bg-blue-50,
+.high-contrast .bg-slate-50,
+.high-contrast .bg-red-50 {
+  background-color: #eee !important;
+}
+
+.high-contrast button {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-width: 4px !important;
+}
+
+.high-contrast button:hover {
+  background-color: #000 !important;
+  color: #fff !important;
+}
