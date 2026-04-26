@@ -20,14 +20,15 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server.ts ./
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/tsconfig.json ./
 
-# Install only production dependencies needed for the server
-RUN npm install --omit=dev && npm install tsx
+# Install only production dependencies and tsx for execution
+RUN npm install --omit=dev && npm install -g tsx
 
 EXPOSE 3000
 
 # Set environment to production
 ENV NODE_ENV=production
 
-# Start the server
-CMD ["npx", "tsx", "server.ts"]
+# Start the server using tsx
+CMD ["tsx", "server.ts"]
