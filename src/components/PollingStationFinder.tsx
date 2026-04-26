@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MapPin, Search, Navigation, Building2, CheckCircle2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Language, translations } from '../lib/translations';
+import { Language } from '../lib/translations';
 
 interface Station {
   id: string;
@@ -13,7 +13,6 @@ interface Station {
 }
 
 const PollingStationFinder: React.FC<{ language: Language }> = ({ language }) => {
-  const t = translations[language];
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<Station[]>([]);

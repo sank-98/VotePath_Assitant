@@ -15,12 +15,18 @@ interface Message {
 
 const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   const t = translations[language];
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'assistant', 
-      content: t.aiAssistantInitial
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const saved = localStorage.getItem('voter_chat_history');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {
+        console.error("Failed to load history", e);
+      }
     }
-  ]);
+    return [{ role: 'assistant', content: translations[language].aiAssistantInitial }];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
@@ -29,21 +35,6 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Persistence: Load from storage
-  useEffect(() => {
-    const saved = localStorage.getItem('voter_chat_history');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
-        }
-      } catch (e) {
-        console.error("Failed to load history", e);
-      }
-    }
-  }, []);
 
   // Persistence: Save to storage
   useEffect(() => {
@@ -72,7 +63,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   };
 
   const clearHistory = () => {
-    if (confirm(language === 'hi' ? 'क्या आप चैट इतिहास मिटाना चाहते हैं?' : "Clear chat history?")) {
+    if (confirm(t.clearHistoryConfirm)) {
       setMessages([{ role: 'assistant', content: t.aiAssistantInitial }]);
       localStorage.removeItem('voter_chat_history');
     }
@@ -343,14 +334,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
       >
         <div className="flex justify-between items-center mb-2 px-2">
           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            <Cpu size={12} /> {language === 'hi' ? 'एआई इंजन सक्रिय' : 'AI Engine Active'}
+            <Cpu size={12} /> {t.aiEngineActive}
           </div>
           {messages.length > 1 && (
             <button 
               onClick={clearHistory}
               className="flex items-center gap-1 text-[10px] font-black text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
             >
-              <RotateCcw size={10} /> {language === 'hi' ? 'इतिहास मिटाएँ' : 'Clear'}
+              <RotateCcw size={10} /> {t.clearHistory}
             </button>
           )}
         </div>
@@ -374,7 +365,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                     {m.structured?.isGrounded && (
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-[8px] font-black text-blue-700 uppercase tracking-tighter">
                         <Globe size={10} className="animate-pulse" />
-                        Google Search Grounded
+                        {t.webVerified}
                       </div>
                     )}
                     <button 
@@ -485,7 +476,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                     {m.structured.sources && m.structured.sources.length > 0 && (
                       <div className="pt-2 border-t border-slate-100">
                         <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                          <Globe size={10} /> {language === 'hi' ? 'सत्यापित स्रोत' : 'Verified Sources'}
+                          <Globe size={10} /> {t.verifiedSources}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {m.structured.sources.map((source, i) => (

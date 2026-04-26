@@ -76,6 +76,11 @@ export const translations = {
     linkCopied: "Link Copied!",
     highContrast: "High Contrast",
     normalContrast: "Normal Mode",
+    aiEngineActive: "AI Engine Active",
+    clearHistory: "Clear Chat",
+    clearHistoryConfirm: "Clear chat history?",
+    verifiedSources: "Verified Sources",
+    webVerified: "Web Verified Information",
   },
   hi: {
     appName: "वोटपथ भारत",
@@ -152,5 +157,10 @@ export const translations = {
     linkCopied: "लिंक कॉपी हो गया!",
     highContrast: "हाई कंट्रास्ट",
     normalContrast: "सामान्य मोड",
+    aiEngineActive: "एआई इंजन सक्रिय",
+    clearHistory: "इतिहास मिटाएँ",
+    clearHistoryConfirm: "क्या आप चैट इतिहास मिटाना चाहते हैं?",
+    verifiedSources: "सत्यापित स्रोत",
+    webVerified: "वेब सत्यापित जानकारी",
   }
 };

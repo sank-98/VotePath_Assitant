@@ -22,7 +22,7 @@ export const handleError = (error: unknown, type: ErrorType = ErrorType.UNKNOWN_
     timestamp: new Date().toISOString(),
   };
 
-  // Here you could add logging to a service like Sentry or Google Cloud Logging
+  // Log error for debugging
   console.error(`[${appError.type}] ${appError.timestamp}: ${appError.message}`, appError.details);
 
   return appError;

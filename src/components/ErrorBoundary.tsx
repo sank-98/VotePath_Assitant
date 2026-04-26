@@ -1,48 +1,46 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle, RefreshCcw } from 'lucide-react';
 
-interface ErrorBoundaryProps {
-  children?: React.ReactNode;
-  fallback?: React.ReactNode;
+interface Props {
+  children: ReactNode;
 }
 
-interface ErrorBoundaryState {
+interface State {
   hasError: boolean;
-  error?: Error;
+  error: Error | null;
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
+    error: null
+  };
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
   }
 
-  render() {
+  public render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="p-8 text-center bg-red-50 border-4 border-red-200 rounded-2xl m-4">
-          <h2 className="text-2xl font-black text-red-900 uppercase tracking-tight mb-2 italic">Something went wrong</h2>
-          <p className="text-red-700 font-bold mb-4">The application encountered an unexpected error.</p>
-          <button
-            className="px-6 py-2 bg-red-600 text-white font-black uppercase tracking-widest rounded-xl border-2 border-red-700 shadow-bento-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
+      return (
+        <div className="min-h-[400px] flex flex-col items-center justify-center p-8 text-center bg-red-50 border-4 border-slate-900 rounded-xl">
+          <div className="p-4 bg-red-100 rounded-full mb-6">
+            <AlertTriangle className="text-red-600" size={48} />
+          </div>
+          <h2 className="text-2xl font-black uppercase tracking-tighter mb-4">Something went wrong</h2>
+          <p className="text-slate-600 font-bold mb-8 max-w-md mx-auto">
+            The application encountered an unexpected error. Please try refreshing the page.
+          </p>
+          <button 
             onClick={() => window.location.reload()}
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all shadow-bento-sm hover:shadow-none translate-y-[-2px] hover:translate-y-0"
           >
-            Reload Application
+            <RefreshCcw size={18} /> Reload Application
           </button>
-          {this.state.error && (
-            <pre className="mt-8 p-4 bg-white border-2 border-red-100 rounded-lg text-left text-xs text-red-400 overflow-auto max-h-40">
-              {this.state.error.toString()}
-            </pre>
-          )}
         </div>
       );
     }

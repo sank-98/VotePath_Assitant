@@ -29,10 +29,9 @@ async function startServer() {
     crossOriginResourcePolicy: { policy: "cross-origin" },
   }));
   
-  // Custom headers for extra security
+  // Custom headers
   app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'ALLOW-FROM https://*.google.com'); // Specific for preview
     next();
   });
   

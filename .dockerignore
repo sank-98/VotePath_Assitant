@@ -1,0 +1,9 @@
+# .dockerignore
+node_modules
+dist
+.git
+.github
+tests
+README.md
+Dockerfile
+.env
