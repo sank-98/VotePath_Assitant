@@ -49,6 +49,16 @@ async function startServer() {
   app.use(limiter);
   app.use(express.json());
 
+  // Explicit MIME types for development source files
+  if (process.env.NODE_ENV !== "production") {
+    app.use((req, res, next) => {
+      if (req.url.endsWith('.tsx') || req.url.endsWith('.ts')) {
+        res.type('application/javascript');
+      }
+      next();
+    });
+  }
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
