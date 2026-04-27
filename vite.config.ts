@@ -8,10 +8,11 @@ export default defineConfig(({mode}) => {
   const apiKey = env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
 
   const isProduction = mode === 'production';
+  const base = isProduction ? '/VotePath_Assitant/' : '/';
 
   return {
     plugins: [react(), tailwindcss()],
-    base: './',
+    base: base,
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(apiKey),
     },
