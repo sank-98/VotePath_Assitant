@@ -1,4 +1,5 @@
 export type Language = 'en' | 'hi';
+export type TranslationType = typeof translations['en'];
 
 export const translations = {
   en: {
@@ -81,6 +82,43 @@ export const translations = {
     clearHistoryConfirm: "Clear chat history?",
     verifiedSources: "Verified Sources",
     webVerified: "Web Verified Information",
+    feedbackTitle: "Rate Your Experience",
+    feedbackSubtitle: "Help us improve voting assistance for everyone.",
+    feedbackRatingLabel: "How helpful was the AI?",
+    feedbackCommentLabel: "Additional comments (optional)",
+    feedbackPlaceholder: "What can we do better?",
+    feedbackSubmit: "Submit Feedback",
+    feedbackThankYou: "Thank You!",
+    feedbackSuccess: "Your feedback helps make Indian democracy more accessible.",
+    feedbackAnother: "Send another response",
+    dashTitle: "My Voting Center",
+    dashSubtitle: "Personalized readiness for the upcoming cycle",
+    dashFollowedStates: "Followed States",
+    dashPinnedStation: "Primary Booth",
+    dashChecklist: "Voter Readiness Progress",
+    dashPinBooth: "Pin to Dashboard",
+    dashUnpinBooth: "Remove from Dashboard",
+    dashNoFollowing: "No states followed yet. Explore the grid above to track specific regions.",
+    dashNoStation: "No booth pinned. Use the Booth Finder to locate and pin your voting center.",
+    cl_voterId: "Obtain Voter ID Card (EPIC)",
+    cl_checkList: "Verify name in Electoral Roll",
+    cl_location: "Visit & identify polling booth",
+    cl_idProof: "Keep ID proof ready for election day",
+    cl_downloadSlip: "Download digital voter slip",
+    dashBadgeStatus: "Voter Ready Status",
+    dashBadgeLevels: {
+      bronze: "Citizen Observer",
+      silver: "Informed Voter",
+      gold: "Democracy Champion"
+    },
+    dashBadgeReady: "YOU ARE READY TO VOTE!",
+    newsLive: "LIVE",
+    newsUpdates: [
+      "Election Commission extends registration deadline for new voters.",
+      "Voter slip distribution commences for 2024 Phase 1.",
+      "EVM First Level Checking (FLC) underway in state capitals.",
+      "KYC (Know Your Candidate) app now available on App Store."
+    ]
   },
   hi: {
     appName: "वोटपथ भारत",
@@ -162,5 +200,42 @@ export const translations = {
     clearHistoryConfirm: "क्या आप चैट इतिहास मिटाना चाहते हैं?",
     verifiedSources: "सत्यापित स्रोत",
     webVerified: "वेब सत्यापित जानकारी",
+    feedbackTitle: "अपने अनुभव को रेटिंग दें",
+    feedbackSubtitle: "सभी के लिए मतदान सहायता को बेहतर बनाने में हमारी मदद करें।",
+    feedbackRatingLabel: "एआई कितना मददगार था?",
+    feedbackCommentLabel: "अतिरिक्त टिप्पणी (वैकल्पिक)",
+    feedbackPlaceholder: "हम और बेहतर क्या कर सकते हैं?",
+    feedbackSubmit: "प्रतिक्रिया भेजें",
+    feedbackThankYou: "धन्यवाद!",
+    feedbackSuccess: "आपकी प्रतिक्रिया भारतीय लोकतंत्र को और अधिक सुलभ बनाने में मदद करती है।",
+    feedbackAnother: "दूसरा जवाब भेजें",
+    dashTitle: "मेरी मतदान जानकारी",
+    dashSubtitle: "अगले चुनाव चक्र के लिए आपकी तैयारी",
+    dashFollowedStates: "अनुसरण किए गए राज्य",
+    dashPinnedStation: "प्रमुख बूथ",
+    dashChecklist: "मतदन तैयारी प्रगति",
+    dashPinBooth: "डैशबोर्ड पर पिन करें",
+    dashUnpinBooth: "डैशबोर्ड से हटाएं",
+    dashNoFollowing: "अभी तक किसी राज्य का अनुसरण नहीं किया गया है। क्षेत्रों को ट्रैक करने के लिए ऊपर ग्रिड देखें।",
+    dashNoStation: "कोई बूथ पिन नहीं किया गया। अपने मतदान केंद्र को खोजने और पिन करने के लिए बूथ फाइंडर का उपयोग करें।",
+    cl_voterId: "वोटर आईडी कार्ड (EPIC) प्राप्त करें",
+    cl_checkList: "निर्वाचक नामावली में नाम सत्यापित करें",
+    cl_location: "मतदान केंद्र पर जाएं और पहचान करें",
+    cl_idProof: "चुनाव के दिन के लिए आईडी प्रूफ तैयार रखें",
+    cl_downloadSlip: "डिजिटल वोटर स्लिप डाउनलोड करें",
+    dashBadgeStatus: "मतदाता तैयारी स्थिति",
+    dashBadgeLevels: {
+      bronze: "नागरिक पर्यवेक्षक",
+      silver: "सूचित मतदाता",
+      gold: "लोकतंत्र रक्षक"
+    },
+    dashBadgeReady: "आप मतदान के लिए तैयार हैं!",
+    newsLive: "लाइव",
+    newsUpdates: [
+      "चुनाव आयोग ने नए पंजीकरण की समय सीमा बढ़ाई।",
+      "लोकसभा चुनाव 2024 के लिए मतदाता पर्चियों का वितरण शुरू।",
+      "ईवीएम प्रथम स्तरीय जांच (FLC) राज्य मुख्यालयों में जारी।",
+      "KYC (अपने उम्मीदवार को जानें) ऐप अब ऐप स्टोर पर उपलब्ध।"
+    ]
   }
 };

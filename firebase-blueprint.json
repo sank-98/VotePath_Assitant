@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "UserQuery": {
+      "title": "User Query",
+      "description": "Log of intent detection and flow usage for analytics",
+      "type": "object",
+      "properties": {
+        "intent": { "type": "string", "enum": ["REGISTER", "VOTE", "ISSUE", "GENERAL", "SEARCH"] },
+        "flow": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["intent", "flow", "timestamp"]
+    },
+    "Feedback": {
+      "title": "Feedback",
+      "description": "User feedback on app utility",
+      "type": "object",
+      "properties": {
+        "rating": { "type": "integer" },
+        "comment": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["rating", "timestamp"]
+    },
+    "FollowedState": {
+      "title": "Followed State",
+      "description": "States a user is tracking info for",
+      "type": "object",
+      "properties": {
+        "stateId": { "type": "string" },
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["stateId", "userId", "timestamp"]
+    },
+    "PinnedStation": {
+      "title": "Pinned Station",
+      "description": "User's selected primary polling station",
+      "type": "object",
+      "properties": {
+        "stationId": { "type": "string" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["stationId", "name", "address", "timestamp"]
+    },
+    "ChecklistItem": {
+      "title": "Checklist Item",
+      "description": "Progress tracking for voting readiness",
+      "type": "object",
+      "properties": {
+        "itemId": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["itemId", "completed", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "analytics/queries/logs/{queryId}": {
+      "schema": "UserQuery",
+      "description": "Log of user interactions"
+    },
+    "feedback/{feedbackId}": {
+      "schema": "Feedback",
+      "description": "User feedback submissions"
+    },
+    "users/{userId}/following/{stateId}": {
+      "schema": "FollowedState",
+      "description": "States followed by user"
+    },
+    "users/{userId}/pinnedStation/primary": {
+      "schema": "PinnedStation",
+      "description": "The primary pinned station for the user"
+    },
+    "users/{userId}/checklist/{itemId}": {
+      "schema": "ChecklistItem",
+      "description": "Voter readiness checklist items"
+    }
+  }
+}

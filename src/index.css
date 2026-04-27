@@ -59,7 +59,31 @@
   border-width: 4px !important;
 }
 
-.high-contrast button:hover {
-  background-color: #000 !important;
-  color: #fff !important;
+@media print {
+  body { 
+    background: white !important; 
+    color: black !important;
+    font-size: 10pt;
+  }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  
+  /* Force bento borders to show in print */
+  .border-4, .border-2 {
+    border-color: black !important;
+    border-width: 1pt !important;
+  }
+  
+  .shadow-bento, .shadow-bento-sm {
+    box-shadow: none !important;
+  }
+  
+  header, footer, nav, aside, .ai-chat-input {
+    display: none !important;
+  }
+  
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 20pt;
+  }
 }

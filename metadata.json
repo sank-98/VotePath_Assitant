@@ -1,6 +1,6 @@
 {
   "name": "VotePath BHARAT",
   "description": "Comprehensive AI Voting Assistant for Indian Elections, including timeline tracking, booth finder, and dual-language support.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["geolocation"],
   "majorCapabilities": []
 }

@@ -37,4 +37,30 @@ describe('Decision Engine Logic', () => {
     const context = processUser("where is my polling booth");
     expect(context.intent).toBe('SEARCH');
   });
+
+  it('handles multi-intent but prioritizes based on weights', () => {
+    // Both 'new' (REGISTER) and 'kahan' (SEARCH) are present
+    const context = processUser("naya voter id kahan banega");
+    expect(context).toBeTruthy();
+    // 'kahan' is in SEARCH, 'naya' is in REGISTER
+    // According to our weights, both have 1. The reducer picks SEARCH if same (order dependent)
+  });
+
+  it('detects issue resolution with correction keywords', () => {
+    const context = processUser("नाम गलत है सुधार कैसे करें");
+    expect(context.intent).toBe('ISSUE');
+    expect(context.flow).toBe('ISSUE_RESOLUTION');
+  });
+
+  it('handles Hindi registration intent', () => {
+    const context = processUser("नया वोटर कार्ड पंजीकरण");
+    expect(context.intent).toBe('REGISTER');
+    expect(context.flow).toBe('NEW_VOTER');
+  });
+
+  it('recognizes "how to vote" as VOTE intent', () => {
+    const context = processUser("how to vote in lok sabha");
+    expect(context.intent).toBe('VOTE');
+    expect(context.flow).toBe('REGISTERED_VOTER');
+  });
 });

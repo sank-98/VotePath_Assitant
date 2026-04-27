@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { MapPin, Search, Navigation, Building2, CheckCircle2, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Search, Navigation, Building2, CheckCircle2, Info, Pin, PinOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language } from '../lib/translations';
+import { pinStation, unpinStation, subscribeToPinnedStation } from '../lib/firebase';
 
 interface Station {
   id: string;
@@ -16,6 +17,44 @@ const PollingStationFinder: React.FC<{ language: Language }> = ({ language }) =>
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<Station[]>([]);
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  useEffect(() => {
+    const unsub = subscribeToPinnedStation((station) => {
+      setPinnedId(station?.stationId || null);
+    });
+    return () => unsub();
+  }, []);
+
+  const locateUser = () => {
+    if (!navigator.geolocation) return;
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setIsLocating(false);
+        // Simulate finding relative to user
+        setResults(mockStations.map(s => ({
+          ...s,
+          distance: (Math.random() * 2 + 0.5).toFixed(1) + ' km'
+        })));
+      },
+      () => {
+        setIsLocating(false);
+        alert(language === 'hi' ? 'स्थान एक्सेस करने में विफल। कृपया मैन्युअल रूप से खोजें।' : 'Failed to access location. Please search manually.');
+      }
+    );
+  };
+
+  const togglePin = async (station: Station) => {
+    if (pinnedId === station.id) {
+      await unpinStation();
+    } else {
+      await pinStation({ id: station.id, name: station.name, address: station.address });
+    }
+  };
 
   const mockStations: Station[] = [
     {
@@ -66,20 +105,31 @@ const PollingStationFinder: React.FC<{ language: Language }> = ({ language }) =>
         </div>
       </div>
 
-      <form onSubmit={handleSearch} className="relative mb-6">
-        <input 
-          type="text" 
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={language === 'hi' ? 'अपना क्षेत्र या पिनकोड खोजें...' : 'Search area or pincode...'}
-          className="w-full bg-slate-50 border-2 border-slate-900 p-3 pl-10 text-xs font-black uppercase tracking-tight focus:bg-white outline-none transition-all rounded-lg"
-        />
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+      <form onSubmit={handleSearch} className="relative mb-6 flex gap-2">
+        <div className="relative flex-1">
+          <input 
+            type="text" 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={language === 'hi' ? 'अपना क्षेत्र या पिनकोड खोजें...' : 'Search area or pincode...'}
+            className="w-full bg-slate-50 border-2 border-slate-900 p-3 pl-10 text-xs font-black uppercase tracking-tight focus:bg-white outline-none transition-all rounded-lg"
+          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+        </div>
+        <button 
+          type="button"
+          onClick={locateUser}
+          disabled={isLocating}
+          title={language === 'hi' ? 'मेरा स्थान उपयोग करें' : 'Use my location'}
+          className={`p-3 border-2 border-slate-900 rounded-lg shadow-bento-sm hover:translate-y-[-2px] transition-all ${userLocation ? 'bg-emerald-100' : 'bg-white'}`}
+        >
+          {isLocating ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Navigation size={20} /></motion.div> : <Navigation size={20} />}
+        </button>
         <button 
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-slate-900 text-white rounded hover:bg-slate-700 transition-colors"
+          className="p-3 bg-slate-900 text-white rounded-lg shadow-bento-sm hover:translate-y-[-2px] transition-all"
         >
-          <Navigation size={14} />
+          <Search size={20} />
         </button>
       </form>
 
@@ -122,9 +172,25 @@ const PollingStationFinder: React.FC<{ language: Language }> = ({ language }) =>
                     </span>
                   ))}
                 </div>
-                <button className="w-full py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-slate-800 flex items-center justify-center gap-2 transition-colors">
-                  <Navigation size={12} /> {language === 'hi' ? 'दिशा-निर्देश प्राप्त करें' : 'Get Directions'}
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => togglePin(station)}
+                    className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded flex items-center justify-center gap-2 transition-all border-2 ${
+                      pinnedId === station.id 
+                        ? 'bg-amber-100 border-amber-900 text-amber-900' 
+                        : 'bg-white border-slate-900 text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {pinnedId === station.id ? (
+                      <><PinOff size={12} /> {language === 'hi' ? 'हटाएं' : 'Unpin'}</>
+                    ) : (
+                      <><Pin size={12} /> {language === 'hi' ? 'पिन करें' : 'Pin'}</>
+                    )}
+                  </button>
+                  <button className="flex-1 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-slate-800 flex items-center justify-center gap-2 transition-colors border-2 border-slate-900">
+                    <Navigation size={12} /> {language === 'hi' ? 'नक्शा' : 'Map'}
+                  </button>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>

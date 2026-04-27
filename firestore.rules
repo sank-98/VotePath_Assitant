@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function incoming() { return request.resource.data; }
+
+    function isValidUserQuery(data) {
+      return data.keys().hasAll(['intent', 'flow', 'timestamp']) 
+        && data.keys().size() == 3
+        && data.intent in ['REGISTER', 'VOTE', 'ISSUE', 'GENERAL', 'SEARCH']
+        && data.flow is string && data.flow.size() <= 100
+        && data.timestamp == request.time;
+    }
+
+    function isValidFeedback(data) {
+      return data.keys().hasAll(['rating', 'timestamp'])
+        && data.keys().size() >= 2 && data.keys().size() <= 3
+        && data.rating is int && data.rating >= 1 && data.rating <= 5
+        && data.timestamp == request.time
+        && (!('comment' in data) || (data.comment is string && data.comment.size() <= 500));
+    }
+
+    function isValidFollow(data, userId, stateId) {
+       return data.keys().hasAll(['stateId', 'userId', 'timestamp'])
+         && data.keys().size() == 3
+         && data.stateId == stateId
+         && data.userId == userId
+         && data.userId == request.auth.uid
+         && data.timestamp == request.time;
+    }
+
+    function isValidPinnedStation(data) {
+      return data.keys().hasAll(['stationId', 'name', 'address', 'timestamp'])
+        && data.keys().size() == 4
+        && data.stationId is string
+        && data.name is string && data.name.size() <= 200
+        && data.address is string && data.address.size() <= 300
+        && data.timestamp == request.time;
+    }
+
+    function isValidChecklistItem(data, itemId) {
+      return data.keys().hasAll(['itemId', 'completed', 'updatedAt'])
+        && data.keys().size() == 3
+        && data.itemId == itemId
+        && data.completed is bool
+        && data.updatedAt == request.time;
+    }
+
+    match /analytics/queries/logs/{queryId} {
+      allow create: if isValidId(queryId) && isValidUserQuery(incoming());
+    }
+
+    match /feedback/{feedbackId} {
+      allow create: if isValidId(feedbackId) && isValidFeedback(incoming());
+    }
+
+    match /users/{userId}/following/{stateId} {
+      allow get, list: if request.auth.uid == userId;
+      allow create, delete: if request.auth.uid == userId && isValidFollow(incoming(), userId, stateId);
+    }
+
+    match /users/{userId}/pinnedStation/primary {
+      allow get: if request.auth.uid == userId;
+      allow create, update: if request.auth.uid == userId && isValidPinnedStation(incoming());
+      allow delete: if request.auth.uid == userId;
+    }
+
+    match /users/{userId}/checklist/{itemId} {
+      allow get, list: if request.auth.uid == userId;
+      allow create, update: if request.auth.uid == userId && isValidChecklistItem(incoming(), itemId);
+    }
+  }
+}

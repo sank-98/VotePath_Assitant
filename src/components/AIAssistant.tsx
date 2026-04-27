@@ -4,6 +4,7 @@ import { Send, Bot, Loader2, List, Clock, FileText, Lightbulb, ShieldCheck, Cpu,
 import { motion, AnimatePresence } from "motion/react";
 import { processUser } from '../lib/decisionEngine';
 import { generateAIResponse, AIResponse as AIStructuredResponse, AIError, AIErrorType } from '../services/geminiService';
+import { logQuery } from '../lib/firebase';
 import { Language, translations } from '../lib/translations';
 import Tooltip from './ui/Tooltip';
 
@@ -148,6 +149,9 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
       };
       setMessages((prev) => [...prev, assistantMessage]);
       setErrorCount(0); // Reset error count on success
+
+      // Log to Firebase for aggregated insights
+      logQuery(context.intent, context.flow).catch(e => console.warn("Log Query Failed", e));
     } catch (error: unknown) {
       console.error('Chat Error:', error);
       setErrorCount((prev) => prev + 1);
@@ -262,12 +266,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                 <div 
                   className="bg-white p-3 rounded border-2 border-slate-900 shadow-bento-sm"
                   tabIndex={0}
+                  role="region"
+                  aria-labelledby="standalone-title"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <Cpu size={14} className="text-emerald-700" />
+                    <Cpu size={14} className="text-emerald-700" aria-hidden="true" />
                     <span className="text-[9px] font-black uppercase tracking-tighter text-slate-700">{t.aiEvmSecurityLabel}</span>
                   </div>
-                  <h4 className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmStandaloneTitle}</h4>
+                  <h4 id="standalone-title" className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmStandaloneTitle}</h4>
                   <p className="text-[9px] text-slate-600 leading-normal font-medium">{t.aiEvmStandaloneDesc}</p>
                 </div>
 
@@ -275,12 +281,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                 <div 
                   className="bg-white p-3 rounded border-2 border-slate-900 shadow-bento-sm"
                   tabIndex={0}
+                  role="region"
+                  aria-labelledby="vvpat-title"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <FileText size={14} className="text-blue-700" />
+                    <FileText size={14} className="text-blue-700" aria-hidden="true" />
                     <span className="text-[9px] font-black uppercase tracking-tighter text-slate-700">{t.aiEvmWorkingLabel}</span>
                   </div>
-                  <h4 className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmVvpatTitle}</h4>
+                  <h4 id="vvpat-title" className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmVvpatTitle}</h4>
                   <p className="text-[9px] text-slate-600 leading-normal font-medium">{t.aiEvmVvpatDesc}</p>
                 </div>
 
@@ -288,12 +296,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                 <div 
                   className="bg-white p-3 rounded border-2 border-slate-900 shadow-bento-sm"
                   tabIndex={0}
+                  role="region"
+                  aria-labelledby="audit-title"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <ClipboardCheck size={14} className="text-amber-700" />
+                    <ClipboardCheck size={14} className="text-amber-700" aria-hidden="true" />
                     <span className="text-[9px] font-black uppercase tracking-tighter text-slate-700">{t.aiEvmIntegrityLabel}</span>
                   </div>
-                  <h4 className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmAuditTitle}</h4>
+                  <h4 id="audit-title" className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmAuditTitle}</h4>
                   <p className="text-[9px] text-slate-600 leading-normal font-medium">{t.aiEvmAuditDesc}</p>
                 </div>
 
@@ -301,12 +311,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                 <div 
                   className="bg-white p-3 rounded border-2 border-slate-900 shadow-bento-sm"
                   tabIndex={0}
+                  role="region"
+                  aria-labelledby="protocol-title"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <ShieldCheck size={14} className="text-red-700" />
+                    <ShieldCheck size={14} className="text-red-700" aria-hidden="true" />
                     <span className="text-[9px] font-black uppercase tracking-tighter text-slate-700">{t.aiEvmProtocolLabel}</span>
                   </div>
-                  <h4 className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmProtocolTitle}</h4>
+                  <h4 id="protocol-title" className="text-[10px] font-black uppercase mb-1 leading-tight">{t.aiEvmProtocolTitle}</h4>
                   <p className="text-[9px] text-slate-600 leading-normal font-medium">{t.aiEvmProtocolDesc}</p>
                 </div>
               </div>

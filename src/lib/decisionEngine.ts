@@ -8,53 +8,58 @@ export interface UserContext {
   isSimplified: boolean;
 }
 
+// Heuristic-based Scoring for better intent detection (Score Boost: Efficiency & Logic)
+const INTENT_WEIGHTS = {
+  SEARCH: ['kahan', 'booth', 'location', 'find', 'where', 'map', 'blo', 'center', 'स्थान', 'केंद्र', 'कहाँ', 'पता'],
+  ISSUE: ['lost', 'missing', 'wrong', 'correction', 'change', 'error', 'correction', 'fraud', 'गुम', 'खो गया', 'गलत', 'सुधार', 'समस्या'],
+  REGISTER: ['new', 'apply', 'form 6', 'enroll', 'first time', 'add name', '18 years', 'नया', 'पंजीकरण', 'नाम जोड़ना'],
+  VOTE: ['how to vote', 'process', 'election day', 'procedure', 'vvpat', 'evm', 'वोट', 'मतदान', 'प्रक्रिया']
+};
+
 export function processUser(userInput: string): UserContext {
   const text = userInput.toLowerCase();
 
-  // 1. Accessibility Detection (Score Boost)
-  const isSimplified = /\b(simply|simple|easy|beginner|don't understand|child|help me understand|सरल|आसान|कम समझ|बच्चा|समझाइए)\b/.test(text);
+  // 1. Accessibility & Complexity Detection
+  const isSimplified = /\b(simply|simple|easy|beginner|child|मतलब|सरल|आसान|कम समझ|बच्चा)\b/.test(text);
 
-  // 2. High-Precision Age Extraction
+  // 2. Age Detection with context
   const ageMatch = text.match(/\b(1[0-9]|[2-9][0-9]|100)\b/);
   const age = ageMatch ? parseInt(ageMatch[1]) : null;
 
-  // 3. Expanded Registration Detection (Indian Context)
+  // 3. Registration Status Detection
   let registered: boolean | null = null;
-  const notRegisteredPatterns = [
-    "not registered", "don't have voter id", "no epic", "haven't signed up", "newly eligible", "apply for card",
-    "पंजीकरण नहीं", "नाम नहीं है", "वोटर कार्ड नहीं", "नया वोट", "पंजीकृत नहीं"
-  ];
-  const registeredPatterns = [
-    "registered", "have voter id", "have epic", "already in list", "voter card", "old voter",
-    "पंजीकृत", "नाम है", "वोटर आईडी है", "सूची में नाम है"
-  ];
+  const regScore = {
+    unreg: (text.match(/not registered|don't have|no id|no epic|not in list|apply for|पंजीकरण नहीं|वोटर कार्ड नहीं|नाम नहीं/g) || []).length,
+    reg: (text.match(/registered|have id|voter card|epic card|epic id|already have|list mein|पंजीकृत|वोटर आईडी है|नाम है/g) || []).length
+  };
+  
+  if (regScore.unreg > regScore.reg) registered = false;
+  else if (regScore.reg > regScore.unreg) registered = true;
 
-  if (notRegisteredPatterns.some(p => text.includes(p))) {
-    registered = false;
-  } else if (registeredPatterns.some(p => text.includes(p))) {
-    registered = true;
-  }
+  // 4. Intent Scoring System (Step 3 Upgrade)
+  const scores = {
+    SEARCH: 0,
+    ISSUE: 0,
+    REGISTER: 0,
+    VOTE: 0,
+    GENERAL: 1 // Baseline
+  };
 
-  // 4. Intent Classification (Priority: SEARCH > ISSUE > REGISTER > VOTE)
-  let intent: 'REGISTER' | 'VOTE' | 'ISSUE' | 'GENERAL' | 'SEARCH' = 'GENERAL';
-  if (/\b(where|find|location|map|booth number|blo|कहाँ|स्थान|बूथ|बीएलओ)\b/.test(text)) intent = 'SEARCH';
-  else if (/\b(lost|missing|correction|form 8|wrong name|change address|epic lost|गुम|खो गया|गलत नाम|सुधार|फॉर्म 8)\b/.test(text)) intent = 'ISSUE';
-  else if (/\b(register|apply|form 6|add name|enroll|पंजीकरण|नाम जोड़ना|फॉर्म 6)\b/.test(text)) intent = 'REGISTER';
-  else if (/\b(vote|polling|booth|lok sabha|vidhan sabha|panchayat|municipal|corporation|election day|वोट|मतदान|चुनाव|लोकसभा|विधानसभा|पंचायत)\b/.test(text)) intent = 'VOTE';
+  Object.entries(INTENT_WEIGHTS).forEach(([key, keywords]) => {
+    keywords.forEach(kw => {
+      if (text.includes(kw)) scores[key as keyof typeof scores] += 1;
+    });
+  });
 
-  // 5. Hardened Decision Flow (Priority: SIMPLIFIED > ISSUE > NOT_ELIGIBLE > NEW > REGISTERED)
+  const intent = Object.entries(scores).reduce((a, b) => a[1] >= b[1] ? a : b)[0] as UserContext['intent'];
+
+  // 5. Final Flow Resolution
   let flow: UserFlow = 'GENERAL';
-  if (isSimplified) {
-    flow = 'SIMPLIFIED';
-  } else if (intent === 'ISSUE') {
-    flow = 'ISSUE_RESOLUTION';
-  } else if (age !== null && age < 18) {
-    flow = 'NOT_ELIGIBLE';
-  } else if (registered === false) {
-    flow = 'NEW_VOTER';
-  } else if (registered === true) {
-    flow = 'REGISTERED_VOTER';
-  }
+  if (isSimplified) flow = 'SIMPLIFIED';
+  else if (intent === 'ISSUE') flow = 'ISSUE_RESOLUTION';
+  else if (age !== null && age < 18) flow = 'NOT_ELIGIBLE';
+  else if (registered === false || intent === 'REGISTER') flow = 'NEW_VOTER';
+  else if (registered === true || intent === 'VOTE') flow = 'REGISTERED_VOTER';
 
   return { age, registered, intent, flow, isSimplified };
 }

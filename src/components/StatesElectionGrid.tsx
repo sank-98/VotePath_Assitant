@@ -1,8 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { INDIA_ELECTION_DATA, StateElectionData } from '../data/indiaElectionData';
 import { Language, translations } from '../lib/translations';
-import { Calendar, MapPin, Search, AlertCircle, CheckSquare, Square, X, ArrowLeft, BarChart2, Twitter, Facebook, MessageCircle, History } from 'lucide-react';
+import { 
+  Calendar, MapPin, Search, AlertCircle, CheckSquare, Square, X, 
+  ArrowLeft, BarChart2, Twitter, Facebook, MessageCircle, History, 
+  Bell, BellOff 
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { followState, unfollowState, subscribeToFollowing } from '../lib/firebase';
 
 interface StatesElectionGridProps {
   language: Language;
@@ -13,7 +18,26 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState<number | 'all'>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [followedIds, setFollowedIds] = useState<string[]>([]);
   const [view, setView] = useState<'grid' | 'comparison'>('grid');
+
+  useEffect(() => {
+    const unsub = subscribeToFollowing((ids) => {
+      setFollowedIds(ids);
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, []);
+
+  const toggleFollow = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (followedIds.includes(id)) {
+      await unfollowState(id);
+    } else {
+      await followState(id);
+    }
+  };
 
   const states = Object.values(INDIA_ELECTION_DATA);
 
@@ -71,8 +95,16 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
     }
   };
 
+  const getCountdown = (year: number) => {
+    const currentYear = new Date().getFullYear();
+    const diff = year - currentYear;
+    if (diff === 0) return language === 'hi' ? 'इस वर्ष' : 'THIS YEAR';
+    if (diff < 0) return language === 'hi' ? 'संपन्न' : 'COMPLETED';
+    return `${diff} ${language === 'hi' ? 'साल बाकी' : 'YEARS TO GO'}`;
+  };
+
   return (
-    <div className="bg-white border-4 border-slate-900 shadow-bento rounded-2xl overflow-hidden mt-12">
+    <div className="bg-white border-4 border-slate-900 shadow-bento rounded-2xl overflow-hidden mt-12" id="states-explorer">
       {/* Header Section */}
       <div className="bg-slate-900 p-6 border-b-4 border-slate-900">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -190,7 +222,18 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                         onClick={() => toggleSelection(state.id)}
                       >
                         {/* Comparison Selector */}
-                        <div className="absolute top-4 right-4 z-20">
+                        <div className="absolute top-4 right-4 z-20 flex gap-2">
+                          <button
+                            onClick={(e) => toggleFollow(e, state.id)}
+                            className={`p-1.5 rounded-lg border-2 transition-all ${
+                              followedIds.includes(state.id) 
+                                ? 'bg-amber-100 border-amber-900 text-amber-900' 
+                                : 'bg-white border-slate-200 text-slate-300 hover:border-slate-900 hover:text-slate-900 shadow-sm'
+                            }`}
+                            title={followedIds.includes(state.id) ? "Stop following" : "Follow for updates"}
+                          >
+                            {followedIds.includes(state.id) ? <Bell size={16} fill="currentColor" /> : <BellOff size={16} />}
+                          </button>
                           {isSelected ? (
                             <CheckSquare className="text-blue-600" size={24} />
                           ) : (
@@ -230,8 +273,13 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                                 <History size={10} />
                                 {t.stateNext}
                               </div>
-                              <div className="text-xl font-black text-slate-900">
-                                {state.nextElection[language]}
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="text-xl font-black text-slate-900">
+                                  {state.nextElection[language]}
+                                </div>
+                                <div className="px-2 py-1 bg-blue-50 text-blue-700 text-[8px] font-black uppercase rounded border border-blue-100">
+                                  {getCountdown(state.nextElectionYear)}
+                                </div>
                               </div>
                             </div>
                           </div>
