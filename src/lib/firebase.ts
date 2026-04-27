@@ -108,10 +108,17 @@ export async function unfollowState(stateId: string) {
 }
 
 export function subscribeToFollowing(callback: (stateIds: string[]) => void) {
-  return onAuthStateChanged(auth, (user) => {
+  let unsubSnapshot: (() => void) | null = null;
+  
+  const unsubAuth = onAuthStateChanged(auth, (user) => {
+    if (unsubSnapshot) {
+      unsubSnapshot();
+      unsubSnapshot = null;
+    }
+    
     if (user) {
       const path = `users/${user.uid}/following`;
-      return onSnapshot(collection(db, path), (snapshot) => {
+      unsubSnapshot = onSnapshot(collection(db, path), (snapshot) => {
         const ids = snapshot.docs.map(doc => doc.data().stateId);
         callback(ids);
       }, (error) => {
@@ -121,6 +128,11 @@ export function subscribeToFollowing(callback: (stateIds: string[]) => void) {
       callback([]);
     }
   });
+
+  return () => {
+    unsubAuth();
+    if (unsubSnapshot) unsubSnapshot();
+  };
 }
 
 export async function pinStation(station: { id: string, name: string, address: string }) {
@@ -156,11 +168,18 @@ export interface PinnedStationData {
 }
 
 export function subscribeToPinnedStation(callback: (station: PinnedStationData | null) => void) {
-  return onAuthStateChanged(auth, (user) => {
+  let unsubSnapshot: (() => void) | null = null;
+
+  const unsubAuth = onAuthStateChanged(auth, (user) => {
+    if (unsubSnapshot) {
+      unsubSnapshot();
+      unsubSnapshot = null;
+    }
+
     if (user) {
       const path = `users/${user.uid}/pinnedStation/primary`;
-      return onSnapshot(doc(db, path), (snapshot) => {
-        callback(snapshot.exists() ? snapshot.data() : null);
+      unsubSnapshot = onSnapshot(doc(db, path), (snapshot) => {
+        callback(snapshot.exists() ? snapshot.data() as PinnedStationData : null);
       }, (error) => {
         handleFirestoreError(error, OperationType.GET, path);
       });
@@ -168,6 +187,11 @@ export function subscribeToPinnedStation(callback: (station: PinnedStationData |
       callback(null);
     }
   });
+
+  return () => {
+    unsubAuth();
+    if (unsubSnapshot) unsubSnapshot();
+  };
 }
 
 export async function updateChecklist(itemId: string, completed: boolean) {
@@ -185,10 +209,17 @@ export async function updateChecklist(itemId: string, completed: boolean) {
 }
 
 export function subscribeToChecklist(callback: (items: Record<string, boolean>) => void) {
-  return onAuthStateChanged(auth, (user) => {
+  let unsubSnapshot: (() => void) | null = null;
+
+  const unsubAuth = onAuthStateChanged(auth, (user) => {
+    if (unsubSnapshot) {
+      unsubSnapshot();
+      unsubSnapshot = null;
+    }
+
     if (user) {
       const path = `users/${user.uid}/checklist`;
-      return onSnapshot(collection(db, path), (snapshot) => {
+      unsubSnapshot = onSnapshot(collection(db, path), (snapshot) => {
         const items: Record<string, boolean> = {};
         snapshot.docs.forEach(doc => {
           items[doc.data().itemId] = doc.data().completed;
@@ -201,4 +232,9 @@ export function subscribeToChecklist(callback: (items: Record<string, boolean>) 
       callback({});
     }
   });
+
+  return () => {
+    unsubAuth();
+    if (unsubSnapshot) unsubSnapshot();
+  };
 }

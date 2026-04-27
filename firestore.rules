@@ -55,8 +55,22 @@ service cloud.firestore {
         && data.updatedAt == request.time;
     }
 
+    function isValidInteraction(data) {
+      return data.keys().hasAll(['userId', 'type', 'metadata', 'timestamp'])
+        && data.keys().size() == 4
+        && data.userId == request.auth.uid
+        && data.type is string && data.type.size() <= 50
+        && data.timestamp == request.time;
+    }
+
     match /analytics/queries/logs/{queryId} {
       allow create: if isValidId(queryId) && isValidUserQuery(incoming());
+    }
+
+    match /interactions/{interactionId} {
+      allow create: if request.auth != null && isValidId(interactionId) && isValidInteraction(incoming());
+      // Aggregation read - only for trends
+      allow list: if request.auth != null;
     }
 
     match /feedback/{feedbackId} {

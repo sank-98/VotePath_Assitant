@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { processUser } from '../lib/decisionEngine';
 import { generateAIResponse, AIResponse as AIStructuredResponse, AIError, AIErrorType } from '../services/geminiService';
 import { logQuery } from '../lib/firebase';
+import { FirebaseService } from '../services/firebaseService';
 import { Language, translations } from '../lib/translations';
 import Tooltip from './ui/Tooltip';
 
@@ -152,6 +153,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
 
       // Log to Firebase for aggregated insights
       logQuery(context.intent, context.flow).catch(e => console.warn("Log Query Failed", e));
+      FirebaseService.logInteraction('ai_query', { intent: context.intent, flow: context.flow });
     } catch (error: unknown) {
       console.error('Chat Error:', error);
       setErrorCount((prev) => prev + 1);

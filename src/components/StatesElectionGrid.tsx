@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { followState, unfollowState, subscribeToFollowing } from '../lib/firebase';
+import { FirebaseService } from '../services/firebaseService';
 import { handleAddToCalendar } from '../lib/calendar';
 import { useVoterData } from '../hooks/useVoterData';
 
@@ -142,6 +143,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
       await unfollowState(id);
     } else {
       await hookFollow(id);
+      FirebaseService.logInteraction('follow_state', { stateId: id });
     }
   };
 
