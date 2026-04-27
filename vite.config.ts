@@ -8,7 +8,7 @@ export default defineConfig(({mode}) => {
   const apiKey = env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
 
   const isProduction = mode === 'production';
-  const base = env.VITE_BASE_URL || '/';
+  const base = env.VITE_BASE_URL || (isProduction ? './' : '/');
 
   return {
     plugins: [react(), tailwindcss()],
