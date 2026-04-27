@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, memo } from 'react';
 import { INDIA_ELECTION_DATA, StateElectionData } from '../data/indiaElectionData';
 import { Language, translations } from '../lib/translations';
 import { 
@@ -8,34 +8,140 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { followState, unfollowState, subscribeToFollowing } from '../lib/firebase';
+import { handleAddToCalendar } from '../lib/calendar';
+import { useVoterData } from '../hooks/useVoterData';
 
 interface StatesElectionGridProps {
   language: Language;
 }
+
+const StateCard = memo(({ 
+  state, 
+  language, 
+  isSelected, 
+  isFollowed, 
+  onClick, 
+  onFollow,
+  onAddToCalendar,
+  getStatusColor,
+  getCountdown,
+  t
+}: { 
+  state: StateElectionData, 
+  language: Language, 
+  isSelected: boolean,
+  isFollowed: boolean,
+  onClick: () => void,
+  onFollow: (e: React.MouseEvent) => void,
+  onAddToCalendar: (e: React.MouseEvent) => void,
+  getStatusColor: (s: string) => string,
+  getCountdown: (y: number) => string,
+  t: any
+}) => {
+  return (
+    <motion.div 
+      layout
+      key={state.id}
+      className={`group relative flex flex-col p-6 bg-white border-2 transition-all rounded-2xl overflow-hidden cursor-pointer ${
+        isSelected ? 'border-blue-600 ring-4 ring-blue-500/10' : 'border-slate-900 shadow-bento-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+      }`}
+      onClick={onClick}
+      role="button"
+      aria-pressed={isSelected}
+      aria-label={`${language === 'hi' ? state.hindiName : state.name} election details`}
+    >
+      {/* Comparison Selector */}
+      <div className="absolute top-4 right-4 z-20 flex gap-2">
+        <button
+          onClick={onFollow}
+          className={`p-1.5 rounded-lg border-2 transition-all ${
+            isFollowed 
+              ? 'bg-amber-100 border-amber-900 text-amber-900' 
+              : 'bg-white border-slate-200 text-slate-300 hover:border-slate-900 hover:text-slate-900 shadow-sm'
+          }`}
+          title={isFollowed ? "Stop following" : "Follow for updates"}
+          aria-label={isFollowed ? `Unfollow ${state.name}` : `Follow ${state.name} for updates`}
+        >
+          {isFollowed ? <Bell size={16} fill="currentColor" /> : <BellOff size={16} />}
+        </button>
+        {isSelected ? (
+          <CheckSquare className="text-blue-600" size={24} aria-hidden="true" />
+        ) : (
+          <Square className="text-slate-200 group-hover:text-slate-400" size={24} aria-hidden="true" />
+        )}
+      </div>
+
+      <div className="absolute top-0 left-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
+        <MapPin size={100} className="rotate-12" />
+      </div>
+
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex justify-between items-start gap-4 mb-6">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.2em] mb-1">
+              {state.id}
+            </span>
+            <h3 className="text-2xl font-black tracking-tighter uppercase text-slate-900 leading-tight">
+              {language === 'hi' ? state.hindiName : state.name}
+            </h3>
+          </div>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+              <AlertCircle size={10} />
+              {t.stateStatus}
+            </div>
+            <div className={`px-3 py-1.5 rounded-lg border-2 text-[11px] font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en)}`}>
+              {state.status[language]}
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+              <History size={10} />
+              {t.stateNext}
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="text-xl font-black text-slate-900">
+                {state.nextElection[language]}
+              </div>
+              <div className="flex gap-1.5">
+                <button 
+                  onClick={onAddToCalendar}
+                  className="p-1 px-2 border border-slate-900 rounded bg-white hover:bg-slate-50 transition-colors shadow-bento-sm"
+                  title="Add to Google Calendar"
+                  aria-label={`Add ${state.name} election to Google Calendar`}
+                >
+                  <Calendar size={12} />
+                </button>
+                <div className="px-2 py-1 bg-blue-50 text-blue-700 text-[8px] font-black uppercase rounded border border-blue-100">
+                  {getCountdown(state.nextElectionYear)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
 
 export default function StatesElectionGrid({ language }: StatesElectionGridProps) {
   const t = translations[language];
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState<number | 'all'>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [followedIds, setFollowedIds] = useState<string[]>([]);
   const [view, setView] = useState<'grid' | 'comparison'>('grid');
-
-  useEffect(() => {
-    const unsub = subscribeToFollowing((ids) => {
-      setFollowedIds(ids);
-    });
-    return () => {
-      if (typeof unsub === 'function') unsub();
-    };
-  }, []);
+  const { followedIds, followState: hookFollow, unpinStation } = useVoterData();
 
   const toggleFollow = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (followedIds.includes(id)) {
       await unfollowState(id);
     } else {
-      await followState(id);
+      await hookFollow(id);
     }
   };
 
@@ -210,83 +316,24 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
 
               {filteredStates.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredStates.map((state) => {
-                    const isSelected = selectedIds.includes(state.id);
-                    return (
-                      <motion.div 
-                        layout
-                        key={state.id}
-                        className={`group relative flex flex-col p-6 bg-white border-2 transition-all rounded-2xl overflow-hidden cursor-pointer ${
-                          isSelected ? 'border-blue-600 ring-4 ring-blue-500/10' : 'border-slate-900 shadow-bento-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
-                        }`}
-                        onClick={() => toggleSelection(state.id)}
-                      >
-                        {/* Comparison Selector */}
-                        <div className="absolute top-4 right-4 z-20 flex gap-2">
-                          <button
-                            onClick={(e) => toggleFollow(e, state.id)}
-                            className={`p-1.5 rounded-lg border-2 transition-all ${
-                              followedIds.includes(state.id) 
-                                ? 'bg-amber-100 border-amber-900 text-amber-900' 
-                                : 'bg-white border-slate-200 text-slate-300 hover:border-slate-900 hover:text-slate-900 shadow-sm'
-                            }`}
-                            title={followedIds.includes(state.id) ? "Stop following" : "Follow for updates"}
-                          >
-                            {followedIds.includes(state.id) ? <Bell size={16} fill="currentColor" /> : <BellOff size={16} />}
-                          </button>
-                          {isSelected ? (
-                            <CheckSquare className="text-blue-600" size={24} />
-                          ) : (
-                            <Square className="text-slate-200 group-hover:text-slate-400" size={24} />
-                          )}
-                        </div>
-
-                        <div className="absolute top-0 left-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
-                          <MapPin size={100} className="rotate-12" />
-                        </div>
-
-                        <div className="relative z-10 flex flex-col h-full">
-                          <div className="flex justify-between items-start gap-4 mb-6">
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.2em] mb-1">
-                                {state.id}
-                              </span>
-                              <h3 className="text-2xl font-black tracking-tighter uppercase text-slate-900 leading-tight">
-                                {language === 'hi' ? state.hindiName : state.name}
-                              </h3>
-                            </div>
-                          </div>
-
-                          <div className="space-y-4 mb-6">
-                            <div className="space-y-1.5">
-                              <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                <AlertCircle size={10} />
-                                {t.stateStatus}
-                              </div>
-                              <div className={`px-3 py-1.5 rounded-lg border-2 text-[11px] font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en)}`}>
-                                {state.status[language]}
-                              </div>
-                            </div>
-
-                            <div className="space-y-1.5">
-                              <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                <History size={10} />
-                                {t.stateNext}
-                              </div>
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="text-xl font-black text-slate-900">
-                                  {state.nextElection[language]}
-                                </div>
-                                <div className="px-2 py-1 bg-blue-50 text-blue-700 text-[8px] font-black uppercase rounded border border-blue-100">
-                                  {getCountdown(state.nextElectionYear)}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {filteredStates.map((state) => (
+                    <StateCard 
+                      key={state.id}
+                      state={state}
+                      language={language}
+                      isSelected={selectedIds.includes(state.id)}
+                      isFollowed={followedIds.includes(state.id)}
+                      onClick={() => toggleSelection(state.id)}
+                      onFollow={(e) => toggleFollow(e, state.id)}
+                      onAddToCalendar={(e) => {
+                        e.stopPropagation();
+                        handleAddToCalendar(state.name[language], state.nextElection[language], language as any);
+                      }}
+                      getStatusColor={getStatusColor}
+                      getCountdown={getCountdown}
+                      t={t}
+                    />
+                  ))}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -347,6 +394,13 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                         className="p-2 bg-slate-50 border-2 border-slate-200 hover:border-slate-900 transition-all rounded-lg"
                       >
                         <MessageCircle size={14} className="text-[#25D366]" />
+                      </button>
+                      <button 
+                        onClick={() => handleAddToCalendar(state.name[language], state.nextElection[language], language as any)}
+                        title="Add to Google Calendar"
+                        className="p-2 bg-blue-600 border-2 border-blue-700 text-white hover:bg-blue-500 transition-all rounded-lg shadow-bento-sm"
+                      >
+                        <Calendar size={14} />
                       </button>
                     </div>
 

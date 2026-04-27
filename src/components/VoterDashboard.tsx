@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   BarChart3, MapPin, CheckCircle2, Clock, 
-  Map as MapIcon, ArrowRight, Share2, Printer, Pin, PinOff, Trophy, Medal
+  Map as MapIcon, ArrowRight, Share2, Printer, Pin, PinOff, Trophy, Medal, Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from '../lib/translations';
-import { 
-  subscribeToFollowing, 
-  subscribeToChecklist, 
-  subscribeToPinnedStation, 
-  updateChecklist,
-  unpinStation,
-  PinnedStationData
-} from '../lib/firebase';
-import { INDIA_ELECTION_DATA } from '../data/indiaElectionData';
+import { useVoterData } from '../hooks/useVoterData';
+import GoogleMapEmbed from './GoogleMapEmbed';
+import { handleAddToCalendar } from '../lib/calendar';
 
 interface VoterDashboardProps {
   language: Language;
@@ -21,21 +15,13 @@ interface VoterDashboardProps {
 
 const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
   const t = translations[language];
-  const [followedIds, setFollowedIds] = useState<string[]>([]);
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
-  const [pinnedStation, setPinnedStation] = useState<PinnedStationData | null>(null);
-
-  useEffect(() => {
-    const unsubFollowing = subscribeToFollowing(setFollowedIds);
-    const unsubChecklist = subscribeToChecklist(setChecklist);
-    const unsubStation = subscribeToPinnedStation(setPinnedStation);
-
-    return () => {
-      unsubFollowing();
-      unsubChecklist();
-      unsubStation();
-    };
-  }, []);
+  const { 
+    followedStates, 
+    checklist, 
+    pinnedStation, 
+    toggleChecklist, 
+    unpinStation 
+  } = useVoterData();
 
   const checklistItems = [
     { id: 'voterId', label: t.cl_voterId },
@@ -47,8 +33,6 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
 
   const completedCount = Object.values(checklist).filter(Boolean).length;
   const progressPercent = (completedCount / checklistItems.length) * 100;
-
-  const followedStates = followedIds.map(id => INDIA_ELECTION_DATA[id]).filter(Boolean);
 
   const getBadge = () => {
     if (completedCount === checklistItems.length) return { level: 'gold', label: t.dashBadgeLevels.gold, icon: <Trophy className="text-amber-500" />, color: 'bg-amber-50 border-amber-500 text-amber-900' };
@@ -121,7 +105,7 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
             {checklistItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => updateChecklist(item.id, !checklist[item.id])}
+                onClick={() => toggleChecklist(item.id)}
                 className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all group ${
                   checklist[item.id] 
                     ? 'bg-emerald-50 border-emerald-900 text-emerald-900' 
@@ -156,6 +140,10 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
                 className="space-y-6"
               >
                 <div className="bg-white border-2 border-slate-900 p-6 rounded-2xl shadow-bento-sm">
+                  <div className="h-48 mb-6">
+                    <GoogleMapEmbed address={pinnedStation.address} className="h-full" />
+                  </div>
+
                   <div className="flex items-center gap-3 mb-2">
                     <MapPin className="text-amber-600" size={20} />
                     <h4 className="text-lg font-black uppercase tracking-tighter leading-tight">{pinnedStation.name}</h4>
@@ -230,8 +218,11 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
                    </div>
                    <h4 className="text-lg font-black uppercase tracking-tighter mb-1">{state.name[language]}</h4>
                    <p className="text-xs font-bold text-blue-600 mb-4">{state.nextElection[language]}</p>
-                   <button className="w-full py-2 border-2 border-slate-900 text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 group-hover:bg-slate-900 group-hover:text-white transition-all">
-                     {language === 'hi' ? 'विवरण देखें' : 'View Details'} <ArrowRight size={12} />
+                   <button 
+                     onClick={() => handleAddToCalendar(state.name[language], state.nextElection[language], language)}
+                     className="w-full py-2 border-2 border-slate-900 text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 group-hover:bg-slate-900 group-hover:text-white transition-all"
+                   >
+                     {language === 'hi' ? 'कैलेंडर में जोड़ें' : 'Add to Calendar'} <Calendar size={12} />
                    </button>
                 </div>
               ))}

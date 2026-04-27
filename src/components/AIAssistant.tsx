@@ -342,6 +342,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50"
         aria-live="polite"
+        aria-relevant="additions"
         role="log"
       >
         <div className="flex justify-between items-center mb-2 px-2">
