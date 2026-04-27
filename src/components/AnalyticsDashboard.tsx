@@ -11,26 +11,30 @@ import {
   Cell
 } from 'recharts';
 import { TrendingUp, Users } from 'lucide-react';
-import { motion } from 'motion/react';
 import { Language } from '../lib/translations';
 
 interface AnalyticsDashboardProps {
   language: Language;
 }
 
+interface TrendItem {
+  name: string;
+  value: number;
+}
+
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ language }) => {
-  const [trends, setTrends] = useState<any[]>([]);
+  const [trends, setTrends] = useState<TrendItem[]>([]);
   const [totalInteractions, setTotalInteractions] = useState(0);
 
   useEffect(() => {
     return FirebaseService.getTrends((data) => {
       const formatted = Object.entries(data).map(([state, count]) => ({
         name: state,
-        value: count as number
+        value: count
       })).sort((a, b) => b.value - a.value).slice(0, 5);
       
       setTrends(formatted);
-      setTotalInteractions(Object.values(data).reduce((a: any, b: any) => a + b, 0) as number);
+      setTotalInteractions(Object.values(data).reduce((a, b) => a + b, 0));
     });
   }, []);
 

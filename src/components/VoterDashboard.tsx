@@ -206,20 +206,24 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
         <div className="p-8">
           {followedStates.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {followedStates.map((state) => (
+               {followedStates.map((state) => (
                 <div key={state.id} className="p-5 border-2 border-slate-900 rounded-xl shadow-bento-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group">
                    <div className="flex items-center justify-between mb-3">
-                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{state.category[language]}</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{state.id}</span>
                      <motion.div 
                        animate={{ scale: [1, 1.2, 1] }} 
                        transition={{ repeat: Infinity, duration: 4 }}
                        className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                      />
                    </div>
-                   <h4 className="text-lg font-black uppercase tracking-tighter mb-1">{state.name[language]}</h4>
+                   <h4 className="text-lg font-black uppercase tracking-tighter mb-1">{language === 'hi' ? state.hindiName : state.name}</h4>
                    <p className="text-xs font-bold text-blue-600 mb-4">{state.nextElection[language]}</p>
                    <button 
-                     onClick={() => handleAddToCalendar(state.name[language], state.nextElection[language], language)}
+                     onClick={() => {
+                        const name = language === 'hi' ? state.hindiName : state.name;
+                        const date = state.nextElection[language] || state.nextElection.en;
+                        handleAddToCalendar(name, date, language);
+                     }}
                      className="w-full py-2 border-2 border-slate-900 text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 group-hover:bg-slate-900 group-hover:text-white transition-all"
                    >
                      {language === 'hi' ? 'कैलेंडर में जोड़ें' : 'Add to Calendar'} <Calendar size={12} />

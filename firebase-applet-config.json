@@ -1,10 +1,10 @@
 {
-  "projectId": "virtual-prompt-wars-project-sp",
-  "appId": "1:768293048868:web:a97e713d6c766532ef3eb1",
-  "apiKey": "AIzaSyC598RqGx-9QJYYSPHyq_VdYp5kvkAjYZk",
-  "authDomain": "virtual-prompt-wars-project-sp.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-2f6e6408-b979-4176-b7fb-3642c165275d",
-  "storageBucket": "virtual-prompt-wars-project-sp.firebasestorage.app",
-  "messagingSenderId": "768293048868",
-  "measurementId": ""
+  "projectId": "YOUR_PROJECT_ID",
+  "appId": "YOUR_APP_ID",
+  "apiKey": "YOUR_API_KEY",
+  "authDomain": "YOUR_AUTH_DOMAIN",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "YOUR_STORAGE_BUCKET",
+  "messagingSenderId": "YOUR_SENDER_ID",
+  "measurementId": "YOUR_MEASUREMENT_ID"
 }

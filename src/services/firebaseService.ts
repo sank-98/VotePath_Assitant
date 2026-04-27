@@ -21,14 +21,14 @@ import { OperationType } from '../lib/firebase';
  * Validates all data before it leaves the client to reduce Firestore Rule rejections.
  */
 class SelectionValidator {
-  static validateInteraction(data: any) {
+  static validateInteraction(data: { type: string; userId: string; [key: string]: unknown }) {
     if (!data.type || typeof data.type !== 'string') throw new Error('Interaction type is required');
     if (!data.userId) throw new Error('User context required for persistence');
     return true;
   }
 }
 
-export const logUserInteraction = async (type: string, metadata: any = {}) => {
+export const logUserInteraction = async (type: string, metadata: Record<string, unknown> = {}) => {
   if (!auth.currentUser) return;
 
   const payload = {
@@ -47,7 +47,7 @@ export const logUserInteraction = async (type: string, metadata: any = {}) => {
   }
 };
 
-export const getAggregatedTrends = (callback: (trends: any) => void) => {
+export const getAggregatedTrends = (callback: (trends: Record<string, number>) => void) => {
   const path = 'interactions';
   
   // Return an unsubscriber that handles both auth and snapshot
@@ -69,7 +69,7 @@ export const getAggregatedTrends = (callback: (trends: any) => void) => {
       unsubSnapshot = onSnapshot(q, (snapshot) => {
         const counts: Record<string, number> = {};
         snapshot.docs.forEach(doc => {
-          const stateId = doc.data().metadata?.stateId;
+          const stateId = (doc.data() as { metadata?: { stateId?: string } }).metadata?.stateId;
           if (stateId) counts[stateId] = (counts[stateId] || 0) + 1;
         });
         callback(counts);

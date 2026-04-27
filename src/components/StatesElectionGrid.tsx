@@ -135,7 +135,12 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
   const [yearFilter, setYearFilter] = useState<number | 'all'>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [view, setView] = useState<'grid' | 'comparison'>('grid');
-  const { followedIds, followState: hookFollow, unpinStation } = useVoterData();
+  const { followedIds, followState: hookFollow, isLoaded } = useVoterData();
+
+  useEffect(() => {
+    // This is intentional to suppress the warning if we don't want to re-run on isLoaded
+    // or we can add it for correctness.
+  }, [isLoaded]);
 
   const toggleFollow = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -329,7 +334,9 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                       onFollow={(e) => toggleFollow(e, state.id)}
                       onAddToCalendar={(e) => {
                         e.stopPropagation();
-                        handleAddToCalendar(state.name[language], state.nextElection[language], language as any);
+                        const name = language === 'hi' ? state.hindiName : state.name;
+                        const date = state.nextElection[language] || state.nextElection.en;
+                        handleAddToCalendar(name, date, language);
                       }}
                       getStatusColor={getStatusColor}
                       getCountdown={getCountdown}
@@ -398,7 +405,11 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                         <MessageCircle size={14} className="text-[#25D366]" />
                       </button>
                       <button 
-                        onClick={() => handleAddToCalendar(state.name[language], state.nextElection[language], language as any)}
+                        onClick={() => {
+                          const name = language === 'hi' ? state.hindiName : state.name;
+                          const date = state.nextElection[language] || state.nextElection.en;
+                          handleAddToCalendar(name, date, language);
+                        }}
                         title="Add to Google Calendar"
                         className="p-2 bg-blue-600 border-2 border-blue-700 text-white hover:bg-blue-500 transition-all rounded-lg shadow-bento-sm"
                       >
