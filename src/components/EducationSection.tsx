@@ -50,20 +50,24 @@ export default function EducationSection({ language }: EducationSectionProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between bg-slate-900 p-4 rounded-t-xl text-white">
-        <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-          <BookOpen size={18} />
-          {language === 'hi' ? 'लोकतंत्र को समझें' : 'Understand Democracy'}
-        </h2>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between bg-slate-900 px-8 py-6 rounded-[2rem] text-white shadow-bento-lg border-4 border-slate-900">
+        <div className="space-y-1 mb-4 md:mb-0">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 flex items-center gap-2">
+            <BookOpen size={14} />
+            {language === 'hi' ? 'सीखें और समझें' : 'LEARN & UNDERSTAND'}
+          </h2>
+          <h2 className="text-2xl font-black uppercase tracking-tighter font-display">
+            {language === 'hi' ? 'लोकतंत्र की शक्ति' : 'Democracy Power'}
+          </h2>
+        </div>
         
-        <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
+        <div className="flex bg-slate-800 p-1.5 rounded-2xl border-4 border-slate-700 shadow-inner">
           <button
             onClick={() => setLevel('simple')}
             aria-label={language === 'hi' ? 'सरल भाषा का स्तर चुनें' : 'Select Simple language level'}
-            aria-pressed={level === 'simple'}
-            className={`flex items-center gap-2 px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all rounded ${
-              level === 'simple' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${
+              level === 'simple' ? 'bg-blue-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
             <Baby size={14} />
@@ -72,9 +76,8 @@ export default function EducationSection({ language }: EducationSectionProps) {
           <button
             onClick={() => setLevel('complex')}
             aria-label={language === 'hi' ? 'विस्तृत भाषा का स्तर चुनें' : 'Select Detailed language level'}
-            aria-pressed={level === 'complex'}
-            className={`flex items-center gap-2 px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all rounded ${
-              level === 'complex' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${
+              level === 'complex' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
             <GraduationCap size={14} />
@@ -83,13 +86,14 @@ export default function EducationSection({ language }: EducationSectionProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {EDUCATION_DATA.map((item, idx) => {
           const IconComponent = icons[item.icon] || Target;
           const colors = [
-            'hover:bg-blue-50 border-blue-600',
-            'hover:bg-emerald-50 border-emerald-600',
-            'hover:bg-amber-50 border-amber-600'
+            'border-blue-600 group-hover:bg-blue-50/50',
+            'border-emerald-600 group-hover:bg-emerald-50/50',
+            'border-amber-500 group-hover:bg-amber-50/50',
+            'border-purple-600 group-hover:bg-purple-50/50'
           ];
           const colorClass = colors[idx % colors.length];
           
@@ -98,54 +102,49 @@ export default function EducationSection({ language }: EducationSectionProps) {
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`bg-white border-4 border-slate-900 shadow-bento p-6 rounded-xl relative group overflow-hidden transition-colors ${colorClass}`}
+              transition={{ delay: idx * 0.05 }}
+              className={`bg-white border-4 border-slate-900 shadow-bento p-8 rounded-[2rem] relative group overflow-hidden transition-all duration-300 bento-hover ${colorClass}`}
             >
-              <div className={`p-3 inline-block rounded-lg border-2 border-slate-900 mb-4 transition-colors ${
-                level === 'simple' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
-              }`}>
-                <IconComponent size={24} />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-bento-sm group-hover:scale-110 transition-transform">
+                  <IconComponent size={24} />
+                </div>
+                <h3 className="text-xl font-black uppercase tracking-tighter leading-tight font-display text-slate-900">
+                  {getTooltip(item.id) ? (
+                    <Tooltip content={getTooltip(item.id)!}>
+                      <span className="underline decoration-slate-200 decoration-4 underline-offset-4 cursor-help">
+                        {item.topic[language]}
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    item.topic[language]
+                  )}
+                </h3>
               </div>
-              
-              <h3 className="text-xl font-black uppercase tracking-tighter mb-3 leading-tight underline decoration-dotted decoration-slate-300">
-                {getTooltip(item.id) ? (
-                  <Tooltip content={getTooltip(item.id)!}>
-                    {item.topic[language]}
-                  </Tooltip>
-                ) : (
-                  item.topic[language]
-                )}
-              </h3>
 
               <AnimatePresence mode="wait">
                 <motion.div
                   key={level}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="min-h-[120px]"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="min-h-[100px]"
                 >
                   {level === 'simple' ? (
                     <p className="text-sm font-bold text-slate-800 leading-relaxed italic">
-                      "{item.simple[language]}"
+                      {item.simple[language]}
                     </p>
                   ) : (
-                    <p className="text-xs font-bold text-slate-700 leading-relaxed font-mono">
+                    <p className="text-[13px] font-bold text-slate-700 leading-relaxed font-mono bg-slate-50 p-4 rounded-xl border-2 border-slate-100">
                       {item.complex[language]}
                     </p>
                   )}
                 </motion.div>
               </AnimatePresence>
 
-              {/* Decorative background element for engineers */}
-              {level === 'complex' && (
-                <div className="absolute top-0 right-0 p-2 opacity-10 font-mono text-[8px] text-slate-400 pointer-events-none">
-                  ID: {item.id}
-                  <br />
-                  TYPE: EDUCATIONAL_AFFIDAVIT
-                </div>
-              )}
+              <div className="mt-4 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[8px] font-black text-slate-300 tracking-[0.3em] uppercase">VERIFIED_PROCEDURE</span>
+              </div>
             </motion.div>
           );
         })}

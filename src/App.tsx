@@ -73,8 +73,8 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-blue-50/30 text-slate-900 p-4 md:p-8 font-sans selection:bg-blue-100 selection:text-blue-900 transition-colors duration-500 ${highContrast ? 'high-contrast' : ''}`}>
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className={`min-h-screen bg-[#f8fafc] text-slate-900 p-4 md:p-10 font-sans selection:bg-blue-100 selection:text-blue-900 transition-colors duration-500 ${highContrast ? 'high-contrast' : ''}`}>
+      <div className="max-w-[1400px] mx-auto space-y-12">
         <Header 
           language={language} 
           t={t} 
@@ -85,39 +85,45 @@ export default function App() {
 
         <NewsTicker t={t} />
         
-        <main className="space-y-12">
+        <main className="space-y-20">
           {/* 0. Landing Hero */}
-          <LandingHero language={language} onGetStarted={scrollToAssistant} />
+          <section className="scroll-mt-24">
+            <LandingHero language={language} onGetStarted={scrollToAssistant} />
+          </section>
 
-          {/* 1. Landing & Impact */}
-          <section aria-label="Education and Impact" className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <EducationSection language={language} />
-            <DemocraticImpact language={language} />
+          {/* 1. Education & Impact - Balanced Grid */}
+          <section aria-label="Education and Impact" className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="lg:col-span-7">
+              <EducationSection language={language} />
+            </div>
+            <div className="lg:col-span-5 sticky top-24 h-fit">
+              <DemocraticImpact language={language} />
+            </div>
           </section>
 
           {/* 2. Primary Experience: AI + Analytics */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="ai-assistant-section">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-10" id="ai-assistant-section">
             {/* AI Assistant */}
-            <aside className="lg:col-span-7 xl:col-span-8 flex flex-col min-h-[600px] no-print" aria-label="AI Voting Assistant">
-              <div className="bg-white border-4 border-slate-900 shadow-bento overflow-hidden rounded-3xl flex-1 flex flex-col relative">
+            <aside className="lg:col-span-7 xl:col-span-8 flex flex-col min-h-[650px] no-print" aria-label="AI Voting Assistant">
+              <div className="bg-white border-4 border-slate-900 shadow-bento-lg overflow-hidden rounded-[2.5rem] flex-1 flex flex-col relative transition-all duration-300">
                 <AIAssistant key={language} language={language} />
               </div>
             </aside>
 
             {/* Trends Dashboard */}
-            <div className="lg:col-span-5 xl:col-span-4 min-h-[400px]">
+            <div className="lg:col-span-5 xl:col-span-4 min-h-[450px]">
               <AnalyticsDashboard language={language} />
             </div>
           </section>
 
           {/* 3. Decision Support: Explainable Matching */}
-          <section aria-labelledby="matching-title" className="space-y-6">
+          <section aria-labelledby="matching-title" className="space-y-8 bg-blue-50/50 p-8 md:p-12 rounded-[3rem] border-4 border-slate-900">
              <div className="flex flex-col gap-2">
-                <h2 id="matching-title" className="text-4xl font-black uppercase tracking-tighter text-slate-900">
+                <h2 id="matching-title" className="text-5xl font-black uppercase tracking-tighter text-slate-900 font-display">
                     {language === 'hi' ? 'आपका व्यक्तिगत मिलान' : 'YOUR PERSONAL MATCH'}
                 </h2>
-                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[10px] tracking-widest">
-                    <Info size={14} className="text-blue-500" />
+                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[11px] tracking-[0.2em]">
+                    <Info size={16} className="text-blue-500" />
                     {language === 'hi' ? 'पारदर्शी एल्गोरिदम विश्लेषण' : 'TRANSPARENT ALGORITHMIC ANALYSIS'}
                 </div>
              </div>
@@ -125,29 +131,29 @@ export default function App() {
           </section>
 
           {/* 4. Voter Tools: Booth Finder & States */}
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 no-print">
-            <div className="h-[550px]">
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 no-print">
+            <div className="h-[600px]">
               <PollingStationFinder language={language} />
             </div>
-            <div className="h-[550px] overflow-y-auto border-4 border-slate-900 shadow-bento rounded-3xl bg-white">
+            <div className="h-[600px] overflow-y-auto border-4 border-slate-900 shadow-bento rounded-[2.5rem] bg-white bento-hover">
               <StatesElectionGrid language={language} />
             </div>
           </section>
 
           {/* 5. Roadmap Section */}
-          <section className="space-y-8" role="region" aria-labelledby="roadmap-title">
-            <div className="bg-white border-4 border-slate-900 shadow-bento overflow-hidden rounded-3xl">
-              <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
-                <h2 id="roadmap-title" className="text-2xl font-black uppercase tracking-widest flex items-center gap-3">
-                  <LayoutGrid size={24} aria-hidden="true" />
+          <section className="space-y-10" role="region" aria-labelledby="roadmap-title">
+            <div className="bg-white border-4 border-slate-900 shadow-bento-lg overflow-hidden rounded-[3rem]">
+              <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
+                <h2 id="roadmap-title" className="text-3xl font-black uppercase tracking-[0.05em] flex items-center gap-4 font-display">
+                  <LayoutGrid size={28} aria-hidden="true" className="text-blue-400" />
                   {t.roadmapTitle}
                 </h2>
-                <div className="flex gap-2" aria-hidden="true">
-                  {[1, 2, 3].map(i => <div key={i} className="w-2 h-2 rounded-full bg-slate-700" />)}
+                <div className="hidden md:flex gap-3" aria-hidden="true">
+                  {[1, 2, 3].map(i => <div key={i} className="w-3 h-3 rounded-full bg-slate-700" />)}
                 </div>
               </div>
               
-              <div className="p-4 md:p-8">
+              <div className="p-6 md:p-12">
                 <Timeline 
                   steps={ELECTION_STEPS} 
                   activeStepId={activeStepId} 
@@ -156,16 +162,18 @@ export default function App() {
                 />
               </div>
 
-              <div className="border-t-4 border-slate-900 min-h-[400px]" aria-live="polite">
+              <div className="border-t-4 border-slate-900 min-h-[450px]" aria-live="polite">
                 <StepDetail step={activeStep} language={language} />
               </div>
             </div>
           </section>
         </main>
         
-        <VoterDashboard language={language} />
+        <div className="pt-10">
+          <VoterDashboard language={language} />
+        </div>
         
-        <div className="no-print">
+        <div className="no-print pt-10">
           <FeedbackSection language={language} />
         </div>
 

@@ -17,9 +17,13 @@ interface Message {
 
 const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   const t = translations[language];
+  const SCHEMA_VERSION = 'v2_steps';
+
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem('voter_chat_history');
-    if (saved) {
+    const savedVersion = localStorage.getItem('voter_chat_schema_version');
+    
+    if (saved && savedVersion === SCHEMA_VERSION) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -27,6 +31,8 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
         console.error("Failed to load history", e);
       }
     }
+    // If version mismatch or no history, reset and save new version
+    localStorage.setItem('voter_chat_schema_version', SCHEMA_VERSION);
     return [{ role: 'assistant', content: translations[language].aiAssistantInitial }];
   });
   const [input, setInput] = useState('');
@@ -145,7 +151,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
 
       const assistantMessage: Message = {
         role: 'assistant',
-        content: data.summary,
+        content: data.whatHappens,
         structured: data,
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -406,84 +412,107 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
 
                 {m.structured && (
                   <div className="mt-4 pt-4 border-t-2 border-slate-100 space-y-4">
-                    {/* Steps */}
-                    {m.structured.steps.length > 0 && (
-                      <div className="space-y-4">
+                    {/* Current Step Badge */}
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-bento-sm">
+                      <Bot size={12} className="text-blue-400" />
+                      {m.structured?.currentStep || 'Assistance'}
+                    </div>
+
+                    {/* What You Must Do */}
+                    {m.structured?.whatYouMustDo && (
+                      <div className="space-y-2 bg-blue-50/50 p-3 rounded-lg border-2 border-blue-100">
                         <div className="flex items-center gap-2 text-[10px] font-black text-blue-700 uppercase tracking-[0.1em]">
-                          <List size={12} /> {t.aiKeySteps}
+                          <ClipboardCheck size={12} /> {t.aiWhatYouMustDo}
                         </div>
-                        <ul className="grid gap-3">
-                          {m.structured.steps.map((step, i) => {
-                            const stepObj = typeof step === 'string' ? { title: step } : step;
-                            return (
-                              <li key={i} className="flex gap-3 items-start text-slate-700 bg-slate-50/50 p-2 rounded border border-transparent hover:border-slate-200 transition-colors">
-                                <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black flex items-center justify-center mt-0.5 shrink-0 border border-blue-200 shadow-sm">
-                                  {i + 1}
-                                </span>
-                                <div className="flex flex-col gap-1.5 overflow-hidden">
-                                  <span className="text-[11px] font-black text-slate-900 leading-tight">
-                                    {renderTextWithTooltips(stepObj.title)}
-                                  </span>
-                                  {stepObj.description && (
-                                    <p className="text-[10px] text-slate-600 leading-normal font-medium italic">
-                                      {renderTextWithTooltips(stepObj.description)}
-                                    </p>
-                                  )}
-                                  {stepObj.example && (
-                                    <div className="mt-1 p-2 bg-white border-l-2 border-blue-400 text-[10px] text-slate-700 leading-snug rounded shadow-sm">
-                                      <span className="font-black text-blue-800 mr-2 uppercase text-[8px] tracking-wider">{t.aiExampleLabel}</span>
-                                      <span dangerouslySetInnerHTML={{ __html: sanitize(stepObj.example) }} />
-                                    </div>
-                                  )}
-                                </div>
-                              </li>
-                            );
-                          })}
-                        </ul>
+                        <p className="text-[11px] text-slate-700 leading-relaxed font-bold">
+                          {renderTextWithTooltips(m.structured.whatYouMustDo)}
+                        </p>
                       </div>
                     )}
 
-                    {/* Timeline */}
-                    {m.structured.timeline.length > 0 && (
+                    {/* Required Documents */}
+                    {m.structured?.requiredDocuments && m.structured.requiredDocuments.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-red-700 uppercase tracking-[0.1em]">
+                          <FileText size={12} /> {t.aiRequiredDocs}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {m.structured.requiredDocuments.map((doc, i) => (
+                            <span key={i} className="text-[9px] bg-red-50 text-red-700 px-2 py-1 rounded border-2 border-red-100 font-black uppercase tracking-wider">
+                              {renderTextWithTooltips(doc)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Timeline / Deadlines */}
+                    {m.structured?.timelineDeadlines && m.structured.timelineDeadlines.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-[10px] font-black text-amber-700 uppercase tracking-[0.1em]">
                           <Clock size={12} /> {t.aiTimeline}
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          {m.structured.timeline.map((item, i) => (
+                          {m.structured.timelineDeadlines.map((item, i) => (
                             <div key={i} className="flex items-center gap-2 group/time">
                               <div className="w-1.5 h-1.5 bg-amber-600 rounded-full group-hover/time:scale-125 transition-transform" />
-                              <span className="text-[10px] text-slate-700 font-black" dangerouslySetInnerHTML={{ __html: sanitize(item) }} />
+                              <span className="text-[10px] text-slate-700 font-black">
+                                {renderTextWithTooltips(item)}
+                              </span>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Documents */}
-                    {m.structured.documents.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-[10px] font-black text-red-700 uppercase tracking-[0.1em]">
-                          <FileText size={12} /> {t.aiRequiredDocs}
+                    {/* Common Mistakes */}
+                    {m.structured?.commonMistakes && m.structured.commonMistakes.length > 0 && (
+                      <div className="p-3 bg-red-50 rounded-lg border-2 border-red-100">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-red-800 uppercase mb-2">
+                          <ShieldCheck size={14} /> {t.aiCommonMistakes}
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          {m.structured.documents.map((doc, i) => (
-                            <span key={i} className="text-[9px] bg-red-50 text-red-700 px-2 py-1 rounded border-2 border-red-100 font-black uppercase tracking-wider" dangerouslySetInnerHTML={{ __html: sanitize(doc) }} />
+                        <ul className="space-y-1.5">
+                          {m.structured.commonMistakes.map((mistake, i) => (
+                            <li key={i} className="text-[10px] text-red-900 font-bold flex items-center gap-2">
+                              <span className="w-1 h-1 bg-red-400 rounded-full" />
+                              {renderTextWithTooltips(mistake)}
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       </div>
                     )}
 
-                    {/* Tips */}
-                    {m.structured.tips.length > 0 && (
-                      <div className="p-3 bg-emerald-50 rounded-lg border-2 border-emerald-100 relative group/tip overflow-hidden">
-                        <div className="absolute top-0 right-0 p-1 opacity-10 group-hover/tip:rotate-12 transition-transform">
-                          <Lightbulb size={32} />
+                    {/* Next Step */}
+                    {m.structured?.nextStep && (
+                      <div className="p-3 bg-emerald-50 rounded-lg border-2 border-emerald-100 border-dashed">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-emerald-800 uppercase mb-1">
+                          <RotateCcw size={14} className="rotate-90" /> {t.aiNextStep}
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] font-black text-emerald-800 uppercase mb-2">
-                          <Lightbulb size={14} /> {t.aiProTip}
-                        </div>
-                        <p className="text-[11px] text-emerald-900 leading-relaxed font-black" dangerouslySetInnerHTML={{ __html: sanitize(m.structured.tips[0]) }} />
+                        <p className="text-[11px] text-emerald-900 leading-relaxed font-black">
+                          {renderTextWithTooltips(m.structured.nextStep)}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Question for User & Options */}
+                    {m.structured?.questionForUser && (
+                      <div className="mt-4 p-4 bg-slate-900 rounded-xl border-4 border-slate-700 shadow-bento-lg">
+                        <p className="text-white text-xs font-black mb-4 uppercase tracking-wider animate-pulse text-center">
+                          {m.structured.questionForUser}
+                        </p>
+                        {m.structured.options && (
+                          <div className="grid grid-cols-1 gap-2">
+                            {m.structured.options.map((option, i) => (
+                              <button
+                                key={i}
+                                onClick={() => handleSend(option)}
+                                className="bg-white hover:bg-blue-50 text-slate-900 text-[10px] font-black py-2.5 px-4 rounded-lg border-2 border-slate-900 shadow-bento-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-left uppercase tracking-tight"
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
 

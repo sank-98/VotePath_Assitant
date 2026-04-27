@@ -1,11 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", var(--font-sans);
   
   /* Bento Grid Shadows */
   --shadow-bento: 8px 8px 0px 0px rgba(15, 23, 42, 1);
   --shadow-bento-sm: 4px 4px 0px 0px rgba(15, 23, 42, 1);
+  --shadow-bento-lg: 12px 12px 0px 0px rgba(15, 23, 42, 1);
+}
+
+@layer utilities {
+  .bento-hover {
+    @apply hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-bento-lg transition-all duration-200;
+  }
 }
 
 @keyframes marquee {

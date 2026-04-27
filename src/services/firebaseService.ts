@@ -6,12 +6,8 @@ import {
   orderBy, 
   onSnapshot, 
   getDocs,
-  Timestamp,
   serverTimestamp,
-  doc,
-  setDoc,
-  deleteDoc,
-  updateDoc
+  doc
 } from 'firebase/firestore';
 import { auth, db, handleFirestoreError } from '../lib/firebase';
 import { OperationType } from '../lib/firebase';
@@ -95,7 +91,6 @@ export const FirebaseService = {
   getTrends: getAggregatedTrends,
   // Helper to safely fetch user data
   getUserProfile: async (userId: string) => {
-    const docRef = doc(db, 'users', userId);
     const snap = await getDocs(query(collection(db, 'users'), where('uid', '==', userId)));
     return snap.docs[0]?.data();
   }

@@ -12,20 +12,19 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || defaultConfig.messagingSenderId,
   appId: import.meta.env.VITE_FIREBASE_APP_ID || defaultConfig.appId,
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || defaultConfig.measurementId,
-  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || defaultConfig.firestoreDatabaseId,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (defaultConfig as any).firestoreDatabaseId,
 };
 
-const isPlaceholder = (key: string) => !key || key.startsWith('YOUR_') || key === 'apiKey';
+// Helper to check for unconfigured state
+const isPlaceholder = (key: string) => !key || key.startsWith('YOUR_') || key === 'apiKey' || key === 'unconfigured';
 
 let app;
 try {
-  if (isPlaceholder(firebaseConfig.apiKey)) {
-    throw new Error("PLACEHOLDER_KEY");
-  }
   app = initializeApp(firebaseConfig);
 } catch (e) {
-  console.warn("Firebase is not configured with a valid API key. Some features will be disabled.");
-  // Initialize with dummy values so the rest of the code doesn't crash on exports
+  console.error("Firebase initialization failed:", e);
+  // Fallback to minimal config to avoid total crash
   app = initializeApp({ ...firebaseConfig, apiKey: "unconfigured" });
 }
 
