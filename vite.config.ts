@@ -9,7 +9,7 @@ export default defineConfig(({mode}) => {
 
   return {
     plugins: [react(), tailwindcss()],
-    base: './',
+    base: '/VotePath_Assitant/',
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(apiKey),
     },
