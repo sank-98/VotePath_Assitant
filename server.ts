@@ -18,6 +18,11 @@ async function startServer() {
 
   console.log(`Starting server in ${process.env.NODE_ENV || 'development'} mode`);
 
+  // Health check endpoint for Cloud Run
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", mode: process.env.NODE_ENV || 'development' });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     console.log("Initializing Vite middleware...");
@@ -28,7 +33,8 @@ async function startServer() {
     
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, 'dist');
+    const distPath = path.resolve(__dirname, process.env.NODE_ENV === "production" ? "." : "dist");
+    console.log(`Serving static files from: ${distPath}`);
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));

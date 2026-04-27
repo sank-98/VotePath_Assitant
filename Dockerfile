@@ -17,20 +17,17 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copy built assets and server file
+# Copy built assets including the compiled server
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.ts ./
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/tsconfig.json ./
 
 # Install only production dependencies
-# tsx requires typescript even at runtime to process server.ts
-RUN npm install --omit=dev --legacy-peer-deps && npm install typescript@~5.8.2 -g && npm install tsx -g
+RUN npm install --omit=dev --legacy-peer-deps
 
 EXPOSE 3000
 
 # Set environment to production
 ENV NODE_ENV=production
 
-# Start the server using the globally installed tsx
-CMD ["tsx", "server.ts"]
+# Start the server using node directly on the compiled file
+CMD ["node", "dist/server.cjs"]
