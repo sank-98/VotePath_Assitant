@@ -1,8 +1,8 @@
 {
-  "name": "votepath-bharat",
+  "name": "votepath-india",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://sank-98.github.io/VotePath_Assitant",
+  "homepage": "https://example.com",
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development tsx server.ts",

@@ -15,18 +15,33 @@ const firebaseConfig = {
   firestoreDatabaseId: import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || defaultConfig.firestoreDatabaseId,
 };
 
-const app = initializeApp(firebaseConfig);
+const isPlaceholder = (key: string) => !key || key.startsWith('YOUR_') || key === 'apiKey';
+
+let app;
+try {
+  if (isPlaceholder(firebaseConfig.apiKey)) {
+    throw new Error("PLACEHOLDER_KEY");
+  }
+  app = initializeApp(firebaseConfig);
+} catch (e) {
+  console.warn("Firebase is not configured with a valid API key. Some features will be disabled.");
+  // Initialize with dummy values so the rest of the code doesn't crash on exports
+  app = initializeApp({ ...firebaseConfig, apiKey: "unconfigured" });
+}
+
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
 // Initialize anonymous auth for logging
-signInAnonymously(auth).catch(err => {
-  if (err.code === 'auth/admin-restricted-operation') {
-    console.warn("Firebase Anonymous Auth is disabled. To enable it, go to your Firebase Console > Authentication > Sign-in method > Add new provider > Anonymous.");
-  } else {
-    console.error("Firebase Anonymous Auth Error:", err);
-  }
-});
+if (!isPlaceholder(firebaseConfig.apiKey)) {
+  signInAnonymously(auth).catch(err => {
+    if (err.code === 'auth/admin-restricted-operation') {
+      console.warn("Firebase Anonymous Auth is disabled. To enable it, go to your Firebase Console > Authentication > Sign-in method > Add new provider > Anonymous.");
+    } else {
+      console.error("Firebase Anonymous Auth Error:", err);
+    }
+  });
+}
 
 export enum OperationType {
   CREATE = 'create',

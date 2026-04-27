@@ -8,7 +8,7 @@ export default defineConfig(({mode}) => {
   const apiKey = env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
 
   const isProduction = mode === 'production';
-  const base = env.VITE_BASE_URL || (isProduction ? '/VotePath_Assitant/' : '/');
+  const base = env.VITE_BASE_URL || '/';
 
   return {
     plugins: [react(), tailwindcss()],
