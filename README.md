@@ -1,4 +1,4 @@
-# VotePath BHARAT 🇮🇳
+# VotePath BHARAT
 ### A Production-Grade Decision Support System for Democratic Participation
 
 VotePath BHARAT is an advanced, multilingual AI-powered assistant designed to empower Indian citizens with explainable, data-driven voting guidance. It moves beyond simple FAQ bots into a **Weighted Decision Engine** that translates personal priorities into candidate alignment.
