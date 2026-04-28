@@ -115,11 +115,22 @@ export class DecisionEngine {
     return results.sort((a, b) => b.totalScore - a.totalScore);
   }
 
-  public getCandidate(id: string) {
+  /**
+   * Retrieves a candidate by their unique identifier.
+   * 
+   * @param id - The unique candidate ID to search for
+   * @returns The matching CandidateData or undefined if not found
+   */
+  public getCandidate(id: string): CandidateData | undefined {
     return this.candidates.find(c => c.id === id);
   }
 
-  public getIssues() {
+  /**
+   * Returns a list of all electoral issues currently managed by the engine.
+   * 
+   * @returns Array of IssueWeight definitions
+   */
+  public getIssues(): IssueWeight[] {
     return this.issues;
   }
 }

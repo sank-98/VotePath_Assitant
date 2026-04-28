@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.1",
   "description": "Production optimized version for Cloud Run deployment",
-  "homepage": "https://ais-pre-wpk7kjyrcnwi2mqhsoh4bh-652949945977.asia-southeast1.run.app",
+  "homepage": "https://votepath-assitant-788008607413.europe-west4.run.app",
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development tsx server.ts",

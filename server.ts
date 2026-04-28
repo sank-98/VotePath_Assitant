@@ -45,11 +45,12 @@ async function startServer() {
         frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.google.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        frameAncestors: ["*"], // Relaxed for cross-environment embedding
+        frameAncestors: ["'self'", "https://*.google.com", "https://*.run.app"],
         upgradeInsecureRequests: [],
       },
     },
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
     frameguard: false,
   }));
 

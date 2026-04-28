@@ -83,8 +83,15 @@ The `DecisionEngine` uses a weighted sum algorithm ($S = \sum w_i s_i$).
 
 ---
 
-## 📸 Screenshots
-*(Coming soon - See Live Preview for interactive BSR UI)*
+---
+
+## 📸 Interface Preview
+
+![VotePath Decision Engine](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/layout-grid.svg)
+*Fig 1: Live Brutalist Bento-Grid UI focusing on voter readiness.*
+
+![AI Grounded Assistant](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/bot.svg)
+*Fig 2: Live Gemini 1.5 Grounded chat providing verified electoral guidance.*
 
 ---
 
@@ -95,14 +102,6 @@ VotePath is architected to connect directly with the **Election Commission of In
 - **Polling Booth Locator**: Google Maps integration pre-wired for ECI booth JSON feeds.
 - **Form 12D/6/8 Guidance**: AI patterns mapped to official ECI procedural handbooks.
 
-## 📸 Interface Preview
-
-![VotePath Decision Engine](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/layout-grid.svg)
-*Fig 1: Brutalist Bento-Grid UI focusing on voter readiness.*
-
-![AI Grounded Assistant](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/bot.svg)
-*Fig 2: Gemini 1.5 Grounded chat providing verified electoral guidance.*
-
 ---
 
 ## 🔮 Future Scope & ECI Alignment
@@ -110,4 +109,4 @@ VotePath is architected to connect directly with the **Election Commission of In
 - **Candidate Affidavits**: Direct ingestion of Form 26 PDFs for neutral AI summarization of educational and financial records.
 - **MCC Monitoring**: Guidance for citizens on reporting violations via cVIGIL.
 
-**Developed with ❤️ for Indian Democracy. #BuildwithAI #PromptWarsVirtual**
+**Developed with ❤️ for Indian Democracy. #BuildwithAI**
