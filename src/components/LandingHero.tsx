@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { CheckCircle2, Shield, Users, ArrowRight } from 'lucide-react';
-import { Language, translations } from '../lib/translations';
+import { Language } from '../lib/translations';
 
 interface LandingHeroProps {
   language: Language;
@@ -9,7 +9,6 @@ interface LandingHeroProps {
 }
 
 const LandingHero: React.FC<LandingHeroProps> = ({ language, onGetStarted }) => {
-  const t = translations[language];
 
   return (
     <div className="bg-slate-900 border-4 border-slate-900 rounded-[3rem] p-10 md:p-16 lg:p-24 text-white relative overflow-hidden shadow-bento-lg group">

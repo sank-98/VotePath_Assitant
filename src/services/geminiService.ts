@@ -260,15 +260,11 @@ INSTRUCTIONS:
       url: chunk.web?.uri || ''
     })).filter((s: { url: string }) => s.url) || [];
 
-    try {
-      const parsedData = safeParse(response.text || "", language, isGrounded);
-      return {
-        ...parsedData,
-        sources: sources.length > 0 ? sources : parsedData.sources
-      };
-    } catch {
-      throw new AIError(AIErrorType.VALIDATION, "Failed to parse AI response");
-    }
+    const parsedData = safeParse(response.text || "", language, isGrounded);
+    return {
+      ...parsedData,
+      sources: sources.length > 0 ? sources : parsedData.sources
+    };
   } catch (error: unknown) {
     console.error("generateAIResponse Error:", error);
     if (error instanceof AIError) throw error;

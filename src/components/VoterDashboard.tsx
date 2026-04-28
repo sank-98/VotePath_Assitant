@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   BarChart3, MapPin, CheckCircle2, Clock, 
-  Map as MapIcon, ArrowRight, Share2, Printer, Pin, PinOff, Trophy, Medal, Calendar
+  Map as MapIcon, Share2, Printer, Pin, PinOff, Trophy, Medal, Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from '../lib/translations';

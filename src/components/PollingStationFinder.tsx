@@ -112,6 +112,7 @@ const PollingStationFinder: React.FC<{ language: Language }> = ({ language }) =>
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={language === 'hi' ? 'अपना क्षेत्र या पिनकोड खोजें...' : 'Search area or pincode...'}
+            aria-label={language === 'hi' ? 'अपना क्षेत्र या पिनकोड खोजें...' : 'Search area or pincode...'}
             className="w-full bg-slate-50 border-2 border-slate-900 p-3 pl-10 text-xs font-black uppercase tracking-tight focus:bg-white outline-none transition-all rounded-lg"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />

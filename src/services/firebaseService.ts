@@ -6,8 +6,7 @@ import {
   orderBy, 
   onSnapshot, 
   getDocs,
-  serverTimestamp,
-  doc
+  serverTimestamp
 } from 'firebase/firestore';
 import { auth, db, handleFirestoreError } from '../lib/firebase';
 import { OperationType } from '../lib/firebase';

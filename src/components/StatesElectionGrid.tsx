@@ -7,7 +7,7 @@ import {
   Bell, BellOff 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { followState, unfollowState, subscribeToFollowing } from '../lib/firebase';
+import { unfollowState } from '../lib/firebase';
 import { FirebaseService } from '../services/firebaseService';
 import { handleAddToCalendar } from '../lib/calendar';
 import { useVoterData } from '../hooks/useVoterData';
@@ -243,6 +243,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                   <input 
                     type="text"
                     placeholder={t.searchStates}
+                    aria-label={t.searchStates}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="pl-10 pr-4 py-2.5 bg-slate-800 border-2 border-slate-700 text-white text-sm font-bold rounded-xl focus:outline-none focus:border-red-500 w-full sm:w-64 transition-all"

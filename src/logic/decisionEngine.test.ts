@@ -36,4 +36,20 @@ describe('DecisionEngine Core Logic', () => {
     
     expect(resultsExtreme[0].confidence).toBe(resultsNormal[0].confidence);
   });
+
+  it('retrieves candidate by id', () => {
+    const candidate = engine.getCandidate('cand-1');
+    expect(candidate).toBeDefined();
+    expect(candidate?.id).toBe('cand-1');
+
+    const missing = engine.getCandidate('missing');
+    expect(missing).toBeUndefined();
+  });
+
+  it('retrieves all issues', () => {
+    const issues = engine.getIssues();
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0]).toHaveProperty('id');
+    expect(issues[0]).toHaveProperty('label');
+  });
 });

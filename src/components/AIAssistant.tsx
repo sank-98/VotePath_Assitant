@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, FormEvent, useCallback, useMemo } from 'react';
 import DOMPurify from 'dompurify';
-import { Send, Bot, Loader2, List, Clock, FileText, Lightbulb, ShieldCheck, Cpu, ClipboardCheck, ChevronDown, ChevronUp, Globe, Copy, Check, Volume2, RotateCcw } from "lucide-react";
+import { Send, Bot, Loader2, Clock, FileText, ShieldCheck, Cpu, ClipboardCheck, ChevronDown, ChevronUp, Globe, Copy, Check, Volume2, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { processUser } from '../lib/decisionEngine';
 import { generateAIResponse, AIResponse as AIStructuredResponse, AIError, AIErrorType } from '../services/geminiService';

@@ -5,13 +5,11 @@ import {
   PolarGrid, 
   PolarAngleAxis, 
   PolarRadiusAxis, 
-  ResponsiveContainer,
-  RadarProps
+  ResponsiveContainer
 } from 'recharts';
-import { DecisionEngine, MatchingResult } from '../logic/decisionEngine';
+import { DecisionEngine } from '../logic/decisionEngine';
 import { Language } from '../lib/translations';
 import { CheckCircle2, ChevronRight, Info } from 'lucide-react';
-import { motion } from 'motion/react';
 
 interface ExplainableMatchingProps {
   language: Language;

@@ -1,5 +1,3 @@
-import { Language } from '../lib/translations';
-
 /**
  * Represents a specific issue category with its user-defined importance.
  */

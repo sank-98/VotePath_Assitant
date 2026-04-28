@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BarChart3, LayoutGrid, Info } from "lucide-react";
+import { LayoutGrid, Info } from "lucide-react";
 import { ELECTION_STEPS } from './data/electionData';
 import Timeline from './components/Timeline';
 import StepDetail from './components/StepDetail';
@@ -49,7 +49,7 @@ export default function App() {
   });
 
   // New State for Matching Engine
-  const [userWeights, setUserWeights] = useState<Record<string, number>>({
+  const [userWeights] = useState<Record<string, number>>({
     economy: 5,
     education: 5,
     healthcare: 5,
