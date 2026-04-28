@@ -31,10 +31,17 @@ export interface CandidateData {
   image?: string;
 }
 
+/**
+ * Represents the final alignment calculation for a candidate.
+ */
 export interface MatchingResult {
+  /** Reference to the candidate ID */
   candidateId: string;
+  /** Cumulative raw score from all issues */
   totalScore: number;
+  /** Percentage match (0.00 to 100.00) based on weighted priorities */
   confidence: number;
+  /** Detailed score per issue for explainable AI transparency */
   breakdown: Record<string, number>;
 }
 
