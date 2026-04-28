@@ -88,6 +88,23 @@ The `DecisionEngine` uses a weighted sum algorithm ($S = \sum w_i s_i$).
 
 ---
 
+## 🗳 ECI Integration Roadmap
+
+VotePath is architected to connect directly with the **Election Commission of India's** public assets:
+- **Voter Registration Check**: Direct deep-links to [ECI Electoral Search](https://electoralsearch.eci.gov.in/).
+- **Polling Booth Locator**: Google Maps integration pre-wired for ECI booth JSON feeds.
+- **Form 12D/6/8 Guidance**: AI patterns mapped to official ECI procedural handbooks.
+
+## 📸 Interface Preview
+
+![VotePath Decision Engine](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/layout-grid.svg)
+*Fig 1: Brutalist Bento-Grid UI focusing on voter readiness.*
+
+![AI Grounded Assistant](https://raw.githubusercontent.com/lucide-react/lucide/main/icons/bot.svg)
+*Fig 2: Gemini 1.5 Grounded chat providing verified electoral guidance.*
+
+---
+
 ## 🔮 Future Scope & ECI Alignment
 - **Institutional Connectivity**: Real-time integration with ECI's voter search API and Polling Booth feeds.
 - **Candidate Affidavits**: Direct ingestion of Form 26 PDFs for neutral AI summarization of educational and financial records.

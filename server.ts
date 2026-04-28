@@ -8,20 +8,27 @@ import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
-// Helper to handle ESM vs CJS paths
-const getDirname = () => {
-  try {
-    const __filename = fileURLToPath(import.meta.url);
-    return path.dirname(__filename);
-  } catch (e) {
-    // In CJS bundled by esbuild, it might fall back to __dirname
-    return __dirname;
+const getDistPath = () => {
+  const root = process.cwd();
+  const rootDist = path.resolve(root, "dist");
+  if (fs.existsSync(rootDist) && fs.statSync(rootDist).isDirectory()) {
+    return rootDist;
   }
+  
+  let currentDir = "";
+  try {
+    currentDir = path.dirname(fileURLToPath(import.meta.url));
+  } catch {
+    currentDir = __dirname;
+  }
+  
+  if (currentDir.split(path.sep).pop() === "dist") {
+    return currentDir;
+  }
+  return path.resolve(currentDir, "dist");
 };
 
-const distPath = process.env.NODE_ENV === "production" 
-  ? path.resolve(process.cwd(), "dist")
-  : path.resolve(getDirname(), "dist");
+const distPath = getDistPath();
 
 async function startServer() {
   const app = express();
@@ -29,19 +36,25 @@ async function startServer() {
 
   // SECURITY: Set security headers
   app.use(helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://maps.googleapis.com", "https://*.firebaseapp.com"],
+        connectSrc: ["'self'", "https://*.googleapis.com", "https://*.firebaseio.com", "https://generativelanguage.googleapis.com", "https://*.google.com"],
+        imgSrc: ["'self'", "data:", "https://maps.gstatic.com", "https://*.googleapis.com", "https://*.google.com", "https://*.gstatic.com"],
+        frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.google.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        frameAncestors: ["*"], // Relaxed for cross-environment embedding
+        upgradeInsecureRequests: [],
+      },
+    },
     crossOriginEmbedderPolicy: false,
+    frameguard: false,
   }));
 
-  // SECURITY: Rate limiting
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per window
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Too many requests from this IP, please try again after 15 minutes" }
-  });
-  app.use("/api/", limiter);
+  // Temporarily disabling rate limit to identify if it's causing the block
+  // app.use("/api/", limiter);
 
   app.use(express.json());
 

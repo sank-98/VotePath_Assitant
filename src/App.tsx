@@ -27,13 +27,25 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>(() => {
-    return (localStorage.getItem('votePath_lang') as Language) || 'hi';
+    try {
+      return (localStorage.getItem('votePath_lang') as Language) || 'hi';
+    } catch {
+      return 'hi';
+    }
   });
   const [activeStepId, setActiveStepId] = useState(() => {
-    return localStorage.getItem('votePath_activeStep') || ELECTION_STEPS[0].id;
+    try {
+      return localStorage.getItem('votePath_activeStep') || ELECTION_STEPS[0].id;
+    } catch {
+      return ELECTION_STEPS[0].id;
+    }
   });
   const [highContrast, setHighContrast] = useState(() => {
-    return localStorage.getItem('votePath_highContrast') === 'true';
+    try {
+      return localStorage.getItem('votePath_highContrast') === 'true';
+    } catch {
+      return false;
+    }
   });
 
   // New State for Matching Engine
@@ -46,15 +58,27 @@ export default function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('votePath_lang', language);
+    try {
+      localStorage.setItem('votePath_lang', language);
+    } catch (e) {
+      console.warn('LocalStorage blocked:', e);
+    }
   }, [language]);
 
   useEffect(() => {
-    localStorage.setItem('votePath_activeStep', activeStepId);
+    try {
+      localStorage.setItem('votePath_activeStep', activeStepId);
+    } catch (e) {
+      console.warn('LocalStorage blocked:', e);
+    }
   }, [activeStepId]);
 
   useEffect(() => {
-    localStorage.setItem('votePath_highContrast', String(highContrast));
+    try {
+      localStorage.setItem('votePath_highContrast', String(highContrast));
+    } catch (e) {
+      console.warn('LocalStorage blocked:', e);
+    }
   }, [highContrast]);
   
   const activeStep = ELECTION_STEPS.find(s => s.id === activeStepId);

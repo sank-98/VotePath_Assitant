@@ -349,9 +349,10 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
       <div 
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50"
-        aria-live="polite"
-        aria-relevant="additions"
         role="log"
+        aria-live="polite"
+        aria-label="VotePath assistant responses"
+        aria-atomic="false"
       >
         <div className="flex justify-between items-center mb-2 px-2">
           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">

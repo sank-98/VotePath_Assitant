@@ -1,6 +1,6 @@
 {
   "name": "VotePath Bharat",
-  "description": "Production-grade electoral assistant leveraging Google Gemini for civic education, real-time polling data via Maps, and explainable algorithmic candidate matching to empower Indian voters.",
+  "description": "Production-grade electoral assistant leveraging Google Gemini for civic education, real-time polling data via Maps, and explainable algorithmic candidate matching to empower Indian voters via official ECI alignment.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": []
 }

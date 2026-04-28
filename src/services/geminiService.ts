@@ -1,3 +1,10 @@
+/**
+ * GEMINI AI SERVICE: Core Intelligence
+ * 
+ * Orchestrates communication with Google Gemini 1.5 Pro to provide
+ * grounded, validated electoral assistance.
+ */
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserContext } from "../lib/decisionEngine";
 import { generateTimeline } from "../lib/timelineEngine";
@@ -167,6 +174,18 @@ function getAI(): GoogleGenAI {
   return aiInstance;
 }
 
+/**
+ * GENERATES PERSONALIZED BHARAT ELECTORAL GUIDANCE
+ * 
+ * Interacts with Gemini 1.5 Flash to provide context-aware civic guidance.
+ * Uses search grounding to ensure data from 2024-2026 is accurate.
+ * 
+ * @param context - The analyzed user intent and state context
+ * @param originalMessage - The raw user query
+ * @param language - Preferred output language (en/hi)
+ * @returns A structured, grounded AI response object
+ * @throws {AIError} Categorized errors for specific UX handling (safety, rate limit, etc.)
+ */
 export async function generateAIResponse(context: UserContext, originalMessage: string, language: Language = 'hi'): Promise<AIResponse> {
   try {
     const timeline = generateTimeline(context.flow, language);
