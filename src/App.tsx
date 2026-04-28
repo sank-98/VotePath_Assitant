@@ -23,6 +23,7 @@ import NewsTicker from './components/NewsTicker';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import ExplainableMatching from './components/ExplainableMatching';
 import LandingHero from './components/LandingHero';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>(() => {
@@ -85,39 +86,48 @@ export default function App() {
 
         <NewsTicker t={t} />
         
-        <main className="space-y-20">
+        <main id="main-content" className="space-y-20">
           {/* 0. Landing Hero */}
-          <section className="scroll-mt-24">
-            <LandingHero language={language} onGetStarted={scrollToAssistant} />
-          </section>
+          <ErrorBoundary>
+            <section className="scroll-mt-24">
+              <LandingHero language={language} onGetStarted={scrollToAssistant} />
+            </section>
+          </ErrorBoundary>
 
           {/* 1. Education & Impact - Balanced Grid */}
-          <section aria-label="Education and Impact" className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div className="lg:col-span-7">
-              <EducationSection language={language} />
-            </div>
-            <div className="lg:col-span-5 sticky top-24 h-fit">
-              <DemocraticImpact language={language} />
-            </div>
-          </section>
+          <ErrorBoundary>
+            <section aria-label="Education and Impact" className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+              <div className="lg:col-span-7">
+                <EducationSection language={language} />
+              </div>
+              <div className="lg:col-span-5 sticky top-24 h-fit">
+                <DemocraticImpact language={language} />
+              </div>
+            </section>
+          </ErrorBoundary>
 
           {/* 2. Primary Experience: AI + Analytics */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-10" id="ai-assistant-section">
             {/* AI Assistant */}
             <aside className="lg:col-span-7 xl:col-span-8 flex flex-col min-h-[650px] no-print" aria-label="AI Voting Assistant">
-              <div className="bg-white border-4 border-slate-900 shadow-bento-lg overflow-hidden rounded-[2.5rem] flex-1 flex flex-col relative transition-all duration-300">
-                <AIAssistant key={language} language={language} />
-              </div>
+              <ErrorBoundary>
+                <div className="bg-white border-4 border-slate-900 shadow-bento-lg overflow-hidden rounded-[2.5rem] flex-1 flex flex-col relative transition-all duration-300">
+                  <AIAssistant key={language} language={language} />
+                </div>
+              </ErrorBoundary>
             </aside>
 
             {/* Trends Dashboard */}
             <div className="lg:col-span-5 xl:col-span-4 min-h-[450px]">
-              <AnalyticsDashboard language={language} />
+              <ErrorBoundary>
+                <AnalyticsDashboard language={language} />
+              </ErrorBoundary>
             </div>
           </section>
 
           {/* 3. Decision Support: Explainable Matching */}
-          <section aria-labelledby="matching-title" className="space-y-8 bg-blue-50/50 p-8 md:p-12 rounded-[3rem] border-4 border-slate-900">
+          <ErrorBoundary>
+            <section aria-labelledby="matching-title" className="space-y-8 bg-blue-50/50 p-8 md:p-12 rounded-[3rem] border-4 border-slate-900">
              <div className="flex flex-col gap-2">
                 <h2 id="matching-title" className="text-5xl font-black uppercase tracking-tighter text-slate-900 font-display">
                     {language === 'hi' ? 'आपका व्यक्तिगत मिलान' : 'YOUR PERSONAL MATCH'}
@@ -129,6 +139,7 @@ export default function App() {
              </div>
              <ExplainableMatching language={language} userWeights={userWeights} />
           </section>
+          </ErrorBoundary>
 
           {/* 4. Voter Tools: Booth Finder & States */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 no-print">

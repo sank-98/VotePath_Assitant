@@ -1,16 +1,33 @@
 import { Language } from '../lib/translations';
 
+/**
+ * Represents a specific issue category with its user-defined importance.
+ */
 export interface IssueWeight {
+  /** Unique identifier for the issue (e.g., 'economy') */
   id: string;
+  /** Internationalized labels for the issue */
   label: { en: string; hi: string };
-  weight: number; // 1-10
+  /** Importance score assigned by the user, ranging from 1 to 10 */
+  weight: number;
 }
 
+/**
+ * Data structure for a political candidate's portfolio.
+ */
 export interface CandidateData {
+  /** Unique candidate identifier */
   id: string;
+  /** Candidate name in supported languages */
   name: { en: string; hi: string };
+  /** Political party affiliation */
   party: { en: string; hi: string };
-  scores: Record<string, number>; // Maps issue ID to performance score (1-10)
+  /** 
+   * Performance scores mapped by issue ID. 
+   * Each score reflects the candidate's alignment with the issue (1-10).
+   */
+  scores: Record<string, number>;
+  /** Optional URL to candidate profile image */
   image?: string;
 }
 
@@ -56,20 +73,25 @@ export class DecisionEngine {
     }
   ];
 
-  /**
-   * Calculate matches based on dynamic user weights
+/**
+   * Calculates matches based on dynamic user priority weights.
+   * 
+   * @param userWeights - Mapping of issue IDs to their relative importance (1-10)
+   * @returns A sorted array of MatchingResults, from highest to lowest alignment
    */
   public calculateMatch(userWeights: Record<string, number>): MatchingResult[] {
-    const results = this.candidates.map(candidate => {
+    const results = this.candidates.map((candidate: CandidateData): MatchingResult => {
       let totalWeightedScore = 0;
       let maxPossibleScore = 0;
       const breakdown: Record<string, number> = {};
 
       Object.entries(userWeights).forEach(([issueId, weight]) => {
+        // Enforce boundary limits (Security Fix)
+        const clampedWeight = Math.max(0, Math.min(10, weight));
         const candidateScore = candidate.scores[issueId] || 0;
-        const weightedScore = candidateScore * weight;
+        const weightedScore = candidateScore * clampedWeight;
         totalWeightedScore += weightedScore;
-        maxPossibleScore += 10 * weight; // 10 is max score per issue
+        maxPossibleScore += 10 * clampedWeight; 
         breakdown[issueId] = candidateScore;
       });
 
@@ -78,7 +100,7 @@ export class DecisionEngine {
       return {
         candidateId: candidate.id,
         totalScore: totalWeightedScore,
-        confidence,
+        confidence: parseFloat(confidence.toFixed(2)),
         breakdown
       };
     });

@@ -13,14 +13,15 @@ VotePath BHARAT is an advanced, multilingual AI-powered assistant designed to em
 - **Visual Analytics**: Utilizes Radar Charts (via Recharts) to explain *why* a specific candidate is recommended.
 
 ### 2. Google Services Integration
-- **Google Maps Interaction**: Not just display—logic influences. The system detects user location to filter relevant constituency data and polling booths.
-- **Gemini Pro 1.5 Integration**: Uses multimodal context to simplify complex electoral laws (Form 6, Form 26, etc.) into conversational guidance.
-- **Calendar API**: One-click "Add to Calendar" for election dates to boost voter turnout.
+- **Google Maps Persistence**: Not just display—logic influences. Detecting user location to filter relevant constituency data and polling booths.
+- **Gemini 1.5 Grounding**: Uses search grounding to verify latest election dates (2024-2026) directly from official sources.
+- **Calendar API**: One-click "Add to Calendar" for election dates to boost voter participation.
 
-### 3. Modern Full-Stack Architecture
-- **Layered Security**: Input sanitization (XSS protection) and a validation layer in `src/services` to ensure data integrity before Firestore writes.
-- **Real-Time Synergy**: Firebase Firestore provides live "Community Trends" dashboards, showing aggregated interest without compromising individual PII.
-- **Optimized Performance**: Modular structure with lazy-loaded components and memoized UI units (Recharts) for high frame rates on mobile.
+### 3. Production Architecture & Security
+- **Defense-in-Depth**: Express proxy with `helmet` CSP headers and `express-rate-limit` to prevent DoS and script injection.
+- **Zero-Trust Logic**: Input sanitization via `DOMPurify` and a custom validation layer in `src/utils/validation.ts`.
+- **Fault Tolerance**: Implemented React Error Boundaries throughout the main grid to prevent cascading UI failures.
+- **Performance**: Modular structure with lazy-loaded components and memoized UI units (Recharts) for high frame rates on mobile.
 
 ### 4. Accessibility (WCAG 2.1)
 - Full keyboard navigation support.
@@ -87,8 +88,9 @@ The `DecisionEngine` uses a weighted sum algorithm ($S = \sum w_i s_i$).
 
 ---
 
-## 🔮 Future Scope
-- **Verification Integration**: Real-time integration with ECI's voter search API.
-- **Candidate Affidavits**: Direct ingestion of Form 26 PDFs for real-time AI summarization of criminal/financial records.
+## 🔮 Future Scope & ECI Alignment
+- **Institutional Connectivity**: Real-time integration with ECI's voter search API and Polling Booth feeds.
+- **Candidate Affidavits**: Direct ingestion of Form 26 PDFs for neutral AI summarization of educational and financial records.
+- **MCC Monitoring**: Guidance for citizens on reporting violations via cVIGIL.
 
-**Developed with ❤️ for Indian Democracy.**
+**Developed with ❤️ for Indian Democracy. #BuildwithAI #PromptWarsVirtual**

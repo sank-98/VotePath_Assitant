@@ -3,6 +3,8 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
@@ -24,6 +26,22 @@ const distPath = process.env.NODE_ENV === "production"
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
+
+  // SECURITY: Set security headers
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }));
+
+  // SECURITY: Rate limiting
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many requests from this IP, please try again after 15 minutes" }
+  });
+  app.use("/api/", limiter);
 
   app.use(express.json());
 

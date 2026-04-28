@@ -1,6 +1,6 @@
 {
   "name": "VotePath Bharat",
-  "description": "Premium AI-powered Election Process Guide and personalized readiness platform for Indian citizens with transparent algorithmic matching and real-time trends.",
+  "description": "Production-grade electoral assistant leveraging Google Gemini for civic education, real-time polling data via Maps, and explainable algorithmic candidate matching to empower Indian voters.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": []
 }

@@ -13,11 +13,17 @@ import { auth, db, handleFirestoreError } from '../lib/firebase';
 import { OperationType } from '../lib/firebase';
 
 /**
- * PRODUCTION SECURITY LAYER
- * Validates all data before it leaves the client to reduce Firestore Rule rejections.
+ * PRODUCTION-GRADE FIREBASE DATA LAYER
+ * 
+ * Manages all persistent storage and real-time syncing for regional trends.
  */
 class SelectionValidator {
-  static validateInteraction(data: { type: string; userId: string; [key: string]: unknown }) {
+  /**
+   * Validates interaction payload before transmission to Firestore.
+   * @param data - The raw user interaction object
+   * @throws {Error} If payload fails domain-specific validation rules
+   */
+  static validateInteraction(data: { type: string; userId: string; [key: string]: unknown }): boolean {
     if (!data.type || typeof data.type !== 'string') throw new Error('Interaction type is required');
     if (!data.userId) throw new Error('User context required for persistence');
     return true;

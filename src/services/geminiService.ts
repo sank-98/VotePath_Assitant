@@ -4,24 +4,41 @@ import { generateTimeline } from "../lib/timelineEngine";
 import { Language } from "../lib/translations";
 import { z } from "zod";
 
-// Zod Schema for strict validation (Score Booster: Security & Reliability)
+/**
+ * Zod Schema for strict validation of AI electoral assistance responses.
+ * Enforces data integrity before displaying to the user.
+ */
 const AIResponseSchema = z.object({
+  /** The specific phase of the election process currently being discussed */
   currentStep: z.string(),
+  /** Explanation of what generally happens in this phase */
   whatHappens: z.string(),
-  whatYouMustDo: z.string(),
+  /** Specific actionable instructions for the citizen */
+   whatYouMustDo: z.string(),
+  /** List of documents (EPIC, Aadhaar, etc.) required for this step */
   requiredDocuments: z.array(z.string()),
+  /** Critical dates or timeframes the user must observe */
   timelineDeadlines: z.array(z.string()),
+  /** Common pitfalls or errors to watch out for during this step */
   commonMistakes: z.array(z.string()),
+  /** The natural sequential step in the process */
   nextStep: z.string(),
+  /** Optional interactive prompt to refine the user's status */
   questionForUser: z.string().optional(),
+  /** Interactive choices for the user to select from */
   options: z.array(z.string()).optional(),
+  /** Indicates if the response was verified with real-world search data */
   isGrounded: z.boolean().optional().default(false),
+  /** Source attribution for grounded information */
   sources: z.array(z.object({
     title: z.string(),
     url: z.string()
   })).optional()
 });
 
+/**
+ * Validated response structure for AI components.
+ */
 export type AIResponse = z.infer<typeof AIResponseSchema>;
 
 const SYSTEM_PROMPT = (language: Language) => `
