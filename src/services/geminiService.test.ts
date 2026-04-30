@@ -1,8 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateAIResponse, AIError, AIErrorType } from './geminiService';
+import { UserContext } from '../lib/decisionEngine';
 
 const mockGenerateContent = vi.fn();
+
+const mockCtx: UserContext = {
+  age: null, registered: null,
+  intent: 'REGISTER', flow: 'NEW_VOTER', isSimplified: false
+};
 
 vi.mock('@google/genai', () => {
   return {
@@ -34,7 +39,7 @@ describe('geminiService', () => {
     };
     mockGenerateContent.mockResolvedValue(mockContentResponse);
 
-    const result = await generateAIResponse({} as any, 'How to register?', 'en');
+    const result = await generateAIResponse(mockCtx, 'How to register?', 'en');
     expect(result.currentStep).toBe('Registration');
     expect(result.isGrounded).toBe(false);
   });
@@ -59,52 +64,52 @@ describe('geminiService', () => {
     };
     mockGenerateContent.mockResolvedValue(mockContentResponse);
 
-    const result = await generateAIResponse({} as any, 'How to register?', 'en');
+    const result = await generateAIResponse(mockCtx, 'How to register?', 'en');
     expect(result.isGrounded).toBe(true);
     expect(result.sources?.[0]?.title).toBe('ECI');
   });
 
   it('throws Rate Limit AIError', async () => {
     mockGenerateContent.mockRejectedValue(new Error('rate limit 429'));
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toThrow(AIError);
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.RATE_LIMIT });
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toThrow(AIError);
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.RATE_LIMIT });
   });
 
   it('throws Safety AIError', async () => {
     mockGenerateContent.mockRejectedValue(new Error('content blocked by safety'));
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.SAFETY });
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.SAFETY });
   });
   
   it('throws Network AIError', async () => {
     mockGenerateContent.mockRejectedValue(new Error('network error offline'));
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.NETWORK });
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.NETWORK });
   });
 
   it('throws unknown AIError', async () => {
     mockGenerateContent.mockRejectedValue(new Error('weird error'));
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.UNKNOWN });
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.UNKNOWN });
   });
 
   it('throws Validation error on empty response', async () => {
     mockGenerateContent.mockResolvedValue({});
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.VALIDATION });
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ type: AIErrorType.VALIDATION });
   });
 
   it('returns fallback instead of Validation error on invalid JSON', async () => {
     mockGenerateContent.mockResolvedValue({ text: 'invalid json' });
-    const result = await generateAIResponse({} as any, 'hi', 'en');
+    const result = await generateAIResponse(mockCtx, 'hi', 'en');
     expect(result.currentStep).toBe('Election Process Assistance');
   });
 
   it('returns fallback if empty markdown block', async () => {
     mockGenerateContent.mockResolvedValue({ text: '```json\n```' });
-    const result = await generateAIResponse({} as any, 'hi', 'en');
+    const result = await generateAIResponse(mockCtx, 'hi', 'en');
     expect(result.currentStep).toBe('Election Process Assistance');
   });
 
   it('throws UNKNOWN for non-error throws', async () => {
     mockGenerateContent.mockRejectedValue('not an error object');
-    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ 
+    await expect(generateAIResponse(mockCtx, 'hi', 'en')).rejects.toMatchObject({ 
       type: AIErrorType.UNKNOWN, 
       message: 'Failed to connect to AI service' 
     });
@@ -123,13 +128,13 @@ describe('geminiService', () => {
     mockGenerateContent.mockResolvedValue({ text: `\`\`\`json
 ${validJson}
 \`\`\`` });
-    const result = await generateAIResponse({} as any, 'hi', 'en');
+    const result = await generateAIResponse(mockCtx, 'hi', 'en');
     expect(result.currentStep).toBe('Markdown');
   });
 
   it('returns fallback for invalid json in markdown block', async () => {
     mockGenerateContent.mockResolvedValue({ text: '```json\n { invalid \n```' });
-    const result = await generateAIResponse({} as any, 'hi', 'en');
+    const result = await generateAIResponse(mockCtx, 'hi', 'en');
     expect(result.currentStep).toBe('Election Process Assistance');
   });
 });

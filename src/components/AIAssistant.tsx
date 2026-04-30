@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, FormEvent, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, FormEvent, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import { Send, Bot, Loader2, Clock, FileText, ShieldCheck, Cpu, ClipboardCheck, ChevronDown, ChevronUp, Globe, Copy, Check, Volume2, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -14,6 +14,14 @@ interface Message {
   content: string;
   structured?: AIStructuredResponse;
 }
+
+const sanitize = (text: string): string => {
+  if (!text) return '';
+  return DOMPurify.sanitize(text, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'code', 'ul', 'li', 'ol', 'p', 'br'],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
+  });
+};
 
 const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   const t = translations[language];
@@ -42,6 +50,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   const [isEvmHubOpen, setIsEvmHubOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Persistence: Save to storage
@@ -71,21 +80,14 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
   };
 
   const clearHistory = () => {
-    if (confirm(t.clearHistoryConfirm)) {
-      setMessages([{ role: 'assistant', content: t.aiAssistantInitial }]);
-      localStorage.removeItem('voter_chat_history');
-    }
+    setConfirmClear(true);
   };
 
-  const sanitize = useMemo(() => {
-    return (text: string) => {
-      if (!text) return '';
-      return DOMPurify.sanitize(text, {
-        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'code', 'ul', 'li', 'ol', 'p', 'br'],
-        ALLOWED_ATTR: ['href', 'target', 'rel'],
-      });
-    };
-  }, []);
+  const confirmClearHistory = () => {
+    setMessages([{ role: 'assistant', content: t.aiAssistantInitial }]);
+    localStorage.removeItem('voter_chat_history');
+    setConfirmClear(false);
+  };
 
   const renderTextWithTooltips = (text: string) => {
     const sanitizedText = sanitize(text);
@@ -359,12 +361,30 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
             <Cpu size={12} /> {t.aiEngineActive}
           </div>
           {messages.length > 1 && (
-            <button 
-              onClick={clearHistory}
-              className="flex items-center gap-1 text-[10px] font-black text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
-            >
-              <RotateCcw size={10} /> {t.clearHistory}
-            </button>
+            confirmClear ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-slate-500 font-bold uppercase">{t.clearHistoryConfirm || 'Clear?'}</span>
+                <button
+                  onClick={confirmClearHistory}
+                  className="px-2 py-1 bg-red-100 text-red-600 rounded text-[9px] font-black uppercase tracking-wider"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setConfirmClear(false)}
+                  className="px-2 py-1 bg-slate-200 text-slate-600 rounded text-[9px] font-black uppercase tracking-wider"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={clearHistory}
+                className="flex items-center gap-1 text-[10px] font-black text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
+              >
+                <RotateCcw size={10} /> {t.clearHistory}
+              </button>
+            )
           )}
         </div>
 
@@ -394,7 +414,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                       onClick={() => copyToClipboard(m.content, idx)}
                       className="ml-auto p-1 text-slate-400 hover:text-slate-600 transition-colors"
                       title="Copy response"
-                      aria-label="Copy response"
+                      aria-label={copiedIdx === idx ? 'Copied' : 'Copy response'}
                     >
                       {copiedIdx === idx ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
                     </button>

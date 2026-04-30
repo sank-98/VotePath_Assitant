@@ -17,7 +17,7 @@ interface State {
  * preventing the entire application from failing.
  */
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+  public override state: State = {
     hasError: false,
     error: null
   };
@@ -32,11 +32,11 @@ export class ErrorBoundary extends Component<Props, State> {
   /**
    * Logs error information to the console or telemetry service.
    */
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error('Uncaught error (Boundary):', error, errorInfo);
   }
 
-  public render(): ReactNode {
+  public override render(): ReactNode {
     if (this.state.hasError) {
       return this.props.fallback || (
         <div 
