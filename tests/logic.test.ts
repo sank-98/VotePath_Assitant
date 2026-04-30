@@ -63,4 +63,16 @@ describe('Decision Engine Logic', () => {
     expect(context.intent).toBe('VOTE');
     expect(context.flow).toBe('REGISTERED_VOTER');
   });
+
+  it('treats exactly 18 years old as eligible', () => {
+    const ctx = processUser('I am 18 years old and want to register');
+    expect(ctx.age).toBe(18);
+    expect(ctx.flow).not.toBe('NOT_ELIGIBLE');
+  });
+
+  it('handles empty input gracefully', () => {
+    const ctx = processUser('');
+    expect(ctx.intent).toBe('GENERAL');
+    expect(ctx.flow).toBe('GENERAL');
+  });
 });

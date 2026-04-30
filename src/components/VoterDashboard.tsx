@@ -254,7 +254,7 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
         <div className="p-8">
           {followedStates.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-               {followedStates.map((state) => (
+              {followedStates.map((state) => state && (
                 <div key={state.id} className="p-5 border-2 border-slate-900 rounded-xl shadow-bento-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group">
                    <div className="flex items-center justify-between mb-3">
                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{state.id}</span>
@@ -269,7 +269,7 @@ const VoterDashboard: React.FC<VoterDashboardProps> = ({ language }) => {
                    <button 
                      onClick={() => {
                         const name = language === 'hi' ? state.hindiName : state.name;
-                        const date = state.nextElection[language] || state.nextElection.en;
+                        const date = state.nextElection[language] || state.nextElection.en || '';
                         handleAddToCalendar(name, date, language);
                      }}
                      className="w-full py-2 border-2 border-slate-900 text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 group-hover:bg-slate-900 group-hover:text-white transition-all"

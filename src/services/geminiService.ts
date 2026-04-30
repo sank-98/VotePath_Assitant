@@ -148,8 +148,11 @@ function safeParse(text: string, language: Language, isGrounded?: boolean): AIRe
     console.error("AI Validation Failure:", error);
     if (text.includes("```json")) {
       try {
-        const secondaryMatch = text.split("```json")[1].split("```")[0];
-        return safeParse(secondaryMatch, language, isGrounded);
+        const secondaryMatch = text.split("```json")[1]?.split("```")[0] || '';
+        if (secondaryMatch) {
+          return safeParse(secondaryMatch, language, isGrounded);
+        }
+        return getFallback(language, isGrounded);
       } catch {
         return getFallback(language, isGrounded);
       }

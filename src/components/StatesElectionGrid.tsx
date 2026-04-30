@@ -95,7 +95,7 @@ const StateCard = memo(({
               <AlertCircle size={10} />
               {t.stateStatus}
             </div>
-            <div className={`px-3 py-1.5 rounded-lg border-2 text-[11px] font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en)}`}>
+            <div className={`px-3 py-1.5 rounded-lg border-2 text-[11px] font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en || '')}`}>
               {state.status[language]}
             </div>
           </div>
@@ -337,12 +337,13 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                       onAddToCalendar={(e) => {
                         e.stopPropagation();
                         const name = language === 'hi' ? state.hindiName : state.name;
-                        const date = state.nextElection[language] || state.nextElection.en;
+                        const date = state.nextElection[language] || state.nextElection.en || '';
                         handleAddToCalendar(name, date, language);
                       }}
                       getStatusColor={getStatusColor}
                       getCountdown={getCountdown}
-                      t={t}
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      t={t as any}
                     />
                   ))}
                 </div>
@@ -409,7 +410,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                       <button 
                         onClick={() => {
                           const name = language === 'hi' ? state.hindiName : state.name;
-                          const date = state.nextElection[language] || state.nextElection.en;
+                          const date = state.nextElection[language] || state.nextElection.en || '';
                           handleAddToCalendar(name, date, language);
                         }}
                         title="Add to Google Calendar"
@@ -425,7 +426,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                           <AlertCircle size={14} />
                           {t.stateStatus}
                         </div>
-                        <div className={`px-4 py-3 rounded-xl border-4 text-xs font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en)}`}>
+                        <div className={`px-4 py-3 rounded-xl border-4 text-xs font-black uppercase tracking-wider text-center ${getStatusColor(state.status.en || '')}`}>
                           {state.status[language]}
                         </div>
                       </div>
@@ -449,7 +450,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                           {t.stateKeyMilestones}
                         </div>
                         <div className="space-y-2">
-                          {state.timeline[language].map((item, i) => (
+                          {(state.timeline[language] || []).map((item, i) => (
                             <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 border-2 border-slate-100 rounded-lg text-[11px] font-bold text-slate-700">
                               <div className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
                               {item}

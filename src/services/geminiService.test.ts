@@ -61,7 +61,7 @@ describe('geminiService', () => {
 
     const result = await generateAIResponse({} as any, 'How to register?', 'en');
     expect(result.isGrounded).toBe(true);
-    expect(result.sources?.[0].title).toBe('ECI');
+    expect(result.sources?.[0]?.title).toBe('ECI');
   });
 
   it('throws Rate Limit AIError', async () => {
@@ -94,6 +94,20 @@ describe('geminiService', () => {
     mockGenerateContent.mockResolvedValue({ text: 'invalid json' });
     const result = await generateAIResponse({} as any, 'hi', 'en');
     expect(result.currentStep).toBe('Election Process Assistance');
+  });
+
+  it('returns fallback if empty markdown block', async () => {
+    mockGenerateContent.mockResolvedValue({ text: '```json\n```' });
+    const result = await generateAIResponse({} as any, 'hi', 'en');
+    expect(result.currentStep).toBe('Election Process Assistance');
+  });
+
+  it('throws UNKNOWN for non-error throws', async () => {
+    mockGenerateContent.mockRejectedValue('not an error object');
+    await expect(generateAIResponse({} as any, 'hi', 'en')).rejects.toMatchObject({ 
+      type: AIErrorType.UNKNOWN, 
+      message: 'Failed to connect to AI service' 
+    });
   });
 
   it('parses markdown json blocks correctly', async () => {

@@ -193,7 +193,7 @@ export default function EducationSection({ language }: EducationSectionProps) {
               className="min-h-[60px] flex items-center"
             >
               <p className="text-lg md:text-xl font-bold text-amber-50 leading-tight">
-                {ELECTION_FACTS[randomFact].text[language]}
+                {ELECTION_FACTS[randomFact]?.text[language]}
               </p>
             </motion.div>
           </AnimatePresence>

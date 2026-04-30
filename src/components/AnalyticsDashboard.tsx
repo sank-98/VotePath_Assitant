@@ -76,7 +76,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ language }) => 
                 <Tooltip 
                   cursor={{ fill: 'rgba(0,0,0,0.03)', radius: 8 }}
                   content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
+                      if (active && payload && payload.length > 0 && payload[0]) {
                       return (
                           <div className="bg-slate-900 text-white p-3 text-[10px] font-black uppercase rounded-xl shadow-xl border-2 border-slate-700">
                             <div className="text-blue-400 mb-1">{payload[0].payload.name}</div>

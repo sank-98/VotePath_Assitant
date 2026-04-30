@@ -15,7 +15,7 @@ describe('DecisionEngine Core Logic', () => {
     
     expect(results).toBeDefined();
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].candidateId).toBe('cand-1'); // Dr. Aruna
+    expect(results[0]?.candidateId).toBe('cand-1'); // Dr. Aruna
   });
 
   it('handles edge case: zero weights', () => {
@@ -34,7 +34,7 @@ describe('DecisionEngine Core Logic', () => {
     const resultsExtreme = engine.calculateMatch(extremeWeights);
     const resultsNormal = engine.calculateMatch(normalWeights);
     
-    expect(resultsExtreme[0].confidence).toBe(resultsNormal[0].confidence);
+    expect(resultsExtreme[0]?.confidence).toBe(resultsNormal[0]?.confidence);
   });
 
   it('retrieves candidate by id', () => {

@@ -22,6 +22,7 @@ const ExplainableMatching: React.FC<ExplainableMatchingProps> = ({ language, use
   
   const issues = engine.getIssues();
   const topMatch = results[0];
+  if (!topMatch) return null;
   const candidate = engine.getCandidate(topMatch.candidateId);
 
   const chartData = issues.map(issue => ({

@@ -37,7 +37,7 @@ export default function StepDetail({ step, language }: StepDetailProps) {
   };
 
   const shareOnTwitter = () => {
-    const text = `${step.title[language]} - ${step.longDescription[language].substring(0, 100)}... via #VotePathIndia`;
+    const text = `${step.title[language]} - ${(step.longDescription[language] || '').substring(0, 100)}... via #VotePathIndia`;
     const url = window.location.href;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
@@ -130,7 +130,7 @@ export default function StepDetail({ step, language }: StepDetailProps) {
               {t.actionChecklist}
             </h4>
             <div className="grid gap-2" role="list">
-              {step.checklist[language].map((item, idx) => (
+              {(step.checklist[language] || []).map((item, idx) => (
                 <button 
                   key={idx}
                   onClick={() => toggleItem(item)}

@@ -24,7 +24,7 @@ export function processUser(userInput: string): UserContext {
 
   // 2. Age Detection with context
   const ageMatch = text.match(/\b(1[0-9]|[2-9][0-9]|100)\b/);
-  const age = ageMatch ? parseInt(ageMatch[1]) : null;
+  const age = ageMatch && ageMatch[1] ? parseInt(ageMatch[1], 10) : null;
 
   // 3. Registration Status Detection
   let registered: boolean | null = null;

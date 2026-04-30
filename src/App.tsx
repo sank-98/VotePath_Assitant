@@ -35,9 +35,9 @@ export default function App() {
   });
   const [activeStepId, setActiveStepId] = useState(() => {
     try {
-      return localStorage.getItem('votePath_activeStep') || ELECTION_STEPS[0].id;
+      return localStorage.getItem('votePath_activeStep') || ELECTION_STEPS[0]?.id || 'step-1';
     } catch {
-      return ELECTION_STEPS[0].id;
+      return ELECTION_STEPS[0]?.id || 'step-1';
     }
   });
   const [highContrast, setHighContrast] = useState(() => {
@@ -82,7 +82,7 @@ export default function App() {
   }, [highContrast]);
   
   const activeStep = ELECTION_STEPS.find(s => s.id === activeStepId);
-  const t = translations[language];
+  const t = translations[language] ?? translations.en;
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'hi' : 'en');
