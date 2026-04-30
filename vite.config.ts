@@ -28,6 +28,12 @@ export default defineConfig(({mode}) => {
         provider: 'v8',
         reporter: ['text', 'lcov'],
         include: ['src/logic/**', 'src/services/**', 'src/utils/**'],
+        thresholds: {
+          lines: 80,
+          statements: 80,
+          functions: 80,
+          branches: 80
+        }
       },
     },
     server: {

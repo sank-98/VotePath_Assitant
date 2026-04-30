@@ -37,7 +37,8 @@ const StateCard = memo(({
   onAddToCalendar: (e: React.MouseEvent) => void,
   getStatusColor: (s: string) => string,
   getCountdown: (y: number) => string,
-  t: Record<string, string>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any
 }) => {
   return (
     <motion.div 

@@ -394,6 +394,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                       onClick={() => copyToClipboard(m.content, idx)}
                       className="ml-auto p-1 text-slate-400 hover:text-slate-600 transition-colors"
                       title="Copy response"
+                      aria-label="Copy response"
                     >
                       {copiedIdx === idx ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
                     </button>
@@ -401,6 +402,8 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
                       onClick={() => speak(m.content, idx)}
                       className={`p-1 text-slate-400 hover:text-slate-600 transition-colors ${isPlaying === idx ? 'text-blue-600' : ''}`}
                       title="Read aloud"
+                      aria-label="Read aloud"
+                      aria-pressed={isPlaying === idx}
                     >
                       <Volume2 size={12} />
                     </button>
@@ -562,6 +565,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
         <input
           type="text"
           value={input}
+          maxLength={500}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t.aiAssistantPlaceholder}
           aria-label={t.aiAssistantPlaceholder}

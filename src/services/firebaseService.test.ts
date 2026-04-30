@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FirebaseService, logUserInteraction, getAggregatedTrends } from './firebaseService';
-import { auth, db, handleFirestoreError } from '../lib/firebase';
-import { addDoc, collection, onSnapshot, getDocs, query } from 'firebase/firestore';
+import { auth, handleFirestoreError } from '../lib/firebase';
+import { addDoc, onSnapshot, getDocs } from 'firebase/firestore';
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
@@ -28,13 +29,13 @@ describe('firebaseService', () => {
 
   describe('logUserInteraction', () => {
     it('returns early if no user', async () => {
-      auth.currentUser = null;
+      Object.defineProperty(auth, 'currentUser', { value: null, writable: true });
       await logUserInteraction('test');
       expect(addDoc).not.toHaveBeenCalled();
     });
 
     it('logs interaction when user is logged in', async () => {
-      auth.currentUser = { uid: 'user123' } as any;
+      Object.defineProperty(auth, 'currentUser', { value: { uid: 'user123' }, writable: true });
       (addDoc as any).mockResolvedValueOnce({});
       
       await logUserInteraction('test_type', { foo: 'bar' });
@@ -49,19 +50,19 @@ describe('firebaseService', () => {
     });
 
     it('throws validation error if missing type', async () => {
-      auth.currentUser = { uid: 'user123' } as any;
+      Object.defineProperty(auth, 'currentUser', { value: { uid: 'user123' }, writable: true });
       await logUserInteraction('', {});
       expect(handleFirestoreError).toHaveBeenCalled();
     });
 
     it('throws validation error if missing userId', async () => {
-      auth.currentUser = { uid: '' } as any;
+      Object.defineProperty(auth, 'currentUser', { value: { uid: '' }, writable: true });
       await logUserInteraction('test', {});
       expect(handleFirestoreError).toHaveBeenCalled();
     });
     
     it('handles firestore addDoc error', async () => {
-      auth.currentUser = { uid: 'user123' } as any;
+      Object.defineProperty(auth, 'currentUser', { value: { uid: 'user123' }, writable: true });
       (addDoc as any).mockRejectedValueOnce(new Error('firestore err'));
       await logUserInteraction('test', {});
       expect(handleFirestoreError).toHaveBeenCalled();
@@ -77,7 +78,7 @@ describe('firebaseService', () => {
       });
 
       const mockUnsubSnapshot = vi.fn();
-      (onSnapshot as any).mockImplementation((q: any, onSuccess: any) => {
+      (onSnapshot as any).mockImplementation(() => {
         return mockUnsubSnapshot;
       });
 
@@ -113,7 +114,8 @@ describe('firebaseService', () => {
           docs: [
             { data: () => ({ metadata: { stateId: 'MH' } }) },
             { data: () => ({ metadata: { stateId: 'MH' } }) },
-            { data: () => ({ metadata: { stateId: 'KA' } }) }
+            { data: () => ({ metadata: { stateId: 'KA' } }) },
+            { data: () => ({ metadata: {} }) }
           ]
         });
         return vi.fn(); // return unsubSnapshot

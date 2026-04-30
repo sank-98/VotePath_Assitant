@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LayoutGrid, Info } from "lucide-react";
 import { ELECTION_STEPS } from './data/electionData';
 import Timeline from './components/Timeline';
@@ -49,13 +49,13 @@ export default function App() {
   });
 
   // New State for Matching Engine
-  const [userWeights] = useState<Record<string, number>>({
+  const userWeights = useMemo<Record<string, number>>(() => ({
     economy: 5,
     education: 5,
     healthcare: 5,
     environment: 5,
     security: 5
-  });
+  }), []);
 
   useEffect(() => {
     try {

@@ -39,7 +39,7 @@ async function startServer() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://maps.googleapis.com", "https://*.firebaseapp.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://maps.googleapis.com", "https://*.firebaseapp.com"],
         connectSrc: ["'self'", "https://*.googleapis.com", "https://*.firebaseio.com", "https://generativelanguage.googleapis.com", "https://*.google.com"],
         imgSrc: ["'self'", "data:", "https://maps.gstatic.com", "https://*.googleapis.com", "https://*.google.com", "https://*.gstatic.com"],
         frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.google.com"],
@@ -54,8 +54,11 @@ async function startServer() {
     frameguard: false,
   }));
 
-  // Temporarily disabling rate limit to identify if it's causing the block
-  // app.use("/api/", limiter);
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  });
+  app.use("/api/", limiter);
 
   app.use(express.json());
 

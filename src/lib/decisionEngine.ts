@@ -11,7 +11,7 @@ export interface UserContext {
 // Heuristic-based Scoring for better intent detection (Score Boost: Efficiency & Logic)
 const INTENT_WEIGHTS = {
   SEARCH: ['kahan', 'booth', 'location', 'find', 'where', 'map', 'blo', 'center', 'स्थान', 'केंद्र', 'कहाँ', 'पता'],
-  ISSUE: ['lost', 'missing', 'wrong', 'correction', 'change', 'error', 'correction', 'fraud', 'गुम', 'खो गया', 'गलत', 'सुधार', 'समस्या'],
+  ISSUE: ['lost', 'missing', 'wrong', 'correction', 'change', 'error', 'fraud', 'गुम', 'खो गया', 'गलत', 'सुधार', 'समस्या'],
   REGISTER: ['new', 'apply', 'form 6', 'enroll', 'first time', 'add name', '18 years', 'नया', 'पंजीकरण', 'नाम जोड़ना'],
   VOTE: ['how to vote', 'process', 'election day', 'procedure', 'vvpat', 'evm', 'वोट', 'मतदान', 'प्रक्रिया']
 };

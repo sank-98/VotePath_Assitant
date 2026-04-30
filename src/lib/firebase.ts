@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, serverTimestamp, doc, setDoc, deleteDoc, onSnapshot, collection } from 'firebase/firestore';
 import defaultConfig from '../../firebase-applet-config.json';
@@ -19,7 +19,7 @@ const firebaseConfig = {
 // Helper to check for unconfigured state
 const isPlaceholder = (key: string) => !key || key.startsWith('YOUR_') || key === 'apiKey' || key === 'unconfigured';
 
-let app;
+let app: FirebaseApp;
 try {
   app = initializeApp(firebaseConfig);
 } catch (e) {
