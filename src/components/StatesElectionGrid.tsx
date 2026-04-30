@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import { INDIA_ELECTION_DATA, StateElectionData } from '../data/indiaElectionData';
-import { Language, translations } from '../lib/translations';
+import { Language, translations, TranslationType } from '../lib/translations';
 import { 
   Calendar, MapPin, Search, AlertCircle, CheckSquare, Square, X, 
   ArrowLeft, BarChart2, Twitter, Facebook, MessageCircle, History, 
@@ -37,8 +37,7 @@ const StateCard = memo(({
   onAddToCalendar: (e: React.MouseEvent) => void,
   getStatusColor: (s: string) => string,
   getCountdown: (y: number) => string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any
+  t: TranslationType
 }) => {
   return (
     <motion.div 
@@ -342,8 +341,7 @@ export default function StatesElectionGrid({ language }: StatesElectionGridProps
                       }}
                       getStatusColor={getStatusColor}
                       getCountdown={getCountdown}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      t={t as any}
+                      t={t}
                     />
                   ))}
                 </div>

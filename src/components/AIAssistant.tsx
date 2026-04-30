@@ -362,7 +362,7 @@ const AIAssistant: React.FC<{ language: Language }> = ({ language }) => {
           </div>
           {messages.length > 1 && (
             confirmClear ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" role="alert" aria-live="assertive">
                 <span className="text-[10px] text-slate-500 font-bold uppercase">{t.clearHistoryConfirm || 'Clear?'}</span>
                 <button
                   onClick={confirmClearHistory}

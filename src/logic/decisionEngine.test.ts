@@ -9,17 +9,17 @@ describe('DecisionEngine Core Logic', () => {
   });
 
   it('calculates perfect match for aligned weights', () => {
-    // Mock user weights focusing on Health (Candidate A is high here)
-    const weights = { health: 10, infrastructure: 0, economy: 0 };
+    // Mock user weights focusing on Healthcare (Candidate Gamma is high here)
+    const weights = { healthcare: 10, education: 0, economy: 0 };
     const results = engine.calculateMatch(weights);
     
     expect(results).toBeDefined();
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0]?.candidateId).toBe('cand-1'); // Dr. Aruna
+    expect(results[0]?.candidateId).toBe('cand-3'); // Candidate Gamma
   });
 
   it('handles edge case: zero weights', () => {
-    const weights = { health: 0, infrastructure: 0, economy: 0 };
+    const weights = { healthcare: 0, education: 0, economy: 0 };
     const results = engine.calculateMatch(weights);
     
     results.forEach(res => {
@@ -28,8 +28,8 @@ describe('DecisionEngine Core Logic', () => {
   });
 
   it('clamps weights above 10 (Security Guard)', () => {
-    const extremeWeights = { health: 999 };
-    const normalWeights = { health: 10 };
+    const extremeWeights = { healthcare: 999 };
+    const normalWeights = { healthcare: 10 };
     
     const resultsExtreme = engine.calculateMatch(extremeWeights);
     const resultsNormal = engine.calculateMatch(normalWeights);
